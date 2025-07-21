@@ -39,10 +39,11 @@ import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
 import dev.deliteai.assistant.presentation.views.ChatView
 import dev.deliteai.assistant.presentation.views.HistoryView
-import dev.deliteai.assistant.presentation.views.HomeView
+import dev.deliteai.assistant.presentation.views.home.HomeView
 import dev.deliteai.assistant.presentation.views.InitStatusView
 import dev.deliteai.assistant.presentation.views.IntroductionPage
 import dev.deliteai.assistant.presentation.views.NoAccessView
+import dev.deliteai.assistant.presentation.views.Root
 import dev.deliteai.assistant.utils.AudioPermissionLauncher
 import dev.deliteai.assistant.utils.Constants
 import dev.deliteai.assistant.utils.GlobalState
@@ -118,57 +119,61 @@ fun Router(
     AudioPermissionLauncher(mainViewModel)
 
     LaunchedEffect(Unit) {
-        mainViewModel.initializeApplication()
+//        mainViewModel.initializeApplication()
     }
 
-    if (mainViewModel.isP0LoadingVS.value && mainViewModel.blockedUsageMessageVS.value == null) {
-        Box(
-            Modifier
-                .background(backgroundPrimary)
-                .fillMaxSize()
-        ) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center), color = accentHigh1)
-        }
-    } else if (mainViewModel.blockedUsageMessageVS.value != null) {
-        NoAccessView(mainViewModel.blockedUsageMessageVS.value!!)
-    } else if (mainViewModel.isFirstBootVS.value) {
-        IntroductionPage(modifier = modifier) {
-            mainViewModel.registerUserFirstBoot()
-        }
-    } else if (!mainViewModel.isNimbleNetReadyVS.value) {
-        InitStatusView(mainViewModel.copyStatusVS.value, mainViewModel.copyProgressVS.value)
-    } else {
-        val navController = rememberNavController()
-        GlobalState.navController = navController
+    val navController = rememberNavController()
 
-        NavHost(
-            navController = navController,
-            startDestination = Constants.VIEWS.HOME_VIEW.str,
-            modifier = modifier
-        ) {
-            composable(Constants.VIEWS.HOME_VIEW.str) {
-                HomeView(mainViewModel, historyViewModel)
-            }
-            composable(Constants.VIEWS.HISTORY_VIEW.str) {
-                HistoryView(
-                    historyViewModel = historyViewModel,
-                    navController = navController,
-                    chatViewModel = chatViewModel
-                )
-            }
-            composable(Constants.VIEWS.CHAT_VIEW.str) {
-                ChatView(chatViewModel, navController, false)
-            }
-            composable(
-                route = "${Constants.VIEWS.CHAT_VIEW.str}/{chatId}",
-                arguments = listOf(navArgument("chatId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("chatId")
-                ChatView(chatViewModel, navController, false, id)
-            }
-            composable(Constants.VIEWS.VOICE_VIEW.str) {
-                ChatView(chatViewModel, navController, true)
-            }
-        }
-    }
+    Root(navController, mainViewModel)
+
+//    if (mainViewModel.isP0LoadingVS.value && mainViewModel.blockedUsageMessageVS.value == null) {
+//        Box(
+//            Modifier
+//                .background(backgroundPrimary)
+//                .fillMaxSize()
+//        ) {
+//            CircularProgressIndicator(Modifier.align(Alignment.Center), color = accentHigh1)
+//        }
+//    } else if (mainViewModel.blockedUsageMessageVS.value != null) {
+//        NoAccessView(mainViewModel.blockedUsageMessageVS.value!!)
+//    } else if (mainViewModel.isFirstBootVS.value) {
+//        IntroductionPage(modifier = modifier) {
+//            mainViewModel.registerUserFirstBoot()
+//        }
+//    } else if (!mainViewModel.isNimbleNetReadyVS.value) {
+//        InitStatusView(mainViewModel.copyStatusVS.value, mainViewModel.copyProgressVS.value)
+//    } else {
+//        val navController = rememberNavController()
+//        GlobalState.navController = navController
+//
+//        NavHost(
+//            navController = navController,
+//            startDestination = Constants.VIEWS.HOME_VIEW.str,
+//            modifier = modifier
+//        ) {
+//            composable(Constants.VIEWS.HOME_VIEW.str) {
+//                HomeView(mainViewModel, historyViewModel)
+//            }
+//            composable(Constants.VIEWS.HISTORY_VIEW.str) {
+//                HistoryView(
+//                    historyViewModel = historyViewModel,
+//                    navController = navController,
+//                    chatViewModel = chatViewModel
+//                )
+//            }
+//            composable(Constants.VIEWS.CHAT_VIEW.str) {
+//                ChatView(chatViewModel, navController, false)
+//            }
+//            composable(
+//                route = "${Constants.VIEWS.CHAT_VIEW.str}/{chatId}",
+//                arguments = listOf(navArgument("chatId") { type = NavType.StringType })
+//            ) { backStackEntry ->
+//                val id = backStackEntry.arguments?.getString("chatId")
+//                ChatView(chatViewModel, navController, false, id)
+//            }
+//            composable(Constants.VIEWS.VOICE_VIEW.str) {
+//                ChatView(chatViewModel, navController, true)
+//            }
+//        }
+//    }
 }

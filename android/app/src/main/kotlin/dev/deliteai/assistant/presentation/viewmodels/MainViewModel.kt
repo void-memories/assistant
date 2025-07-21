@@ -20,6 +20,7 @@ import dev.deliteai.assistant.utils.initializeNimbleNetAndWaitForIsReady
 import android.app.Activity
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,6 +51,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     val blockedUsageMessageVS = mutableStateOf<String?>(null)
     var isP0LoadingVS = mutableStateOf(true)
     var isFirstBootVS = mutableStateOf(true)
+
+    var selectedNavBarIndex = mutableIntStateOf(0)
 
     fun initializeApplication() {
         viewModelScope.launch(Dispatchers.IO) {

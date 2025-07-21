@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package dev.deliteai.assistant.presentation.views
+package dev.deliteai.assistant.presentation.views.home
 
 import dev.deliteai.assistant.R
 import dev.deliteai.assistant.presentation.ui.theme.accent
@@ -71,7 +71,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.MessageCircle
 
 @Composable
-fun HomeView(mainViewModel: MainViewModel, historyViewModel: HistoryViewModel) {
+fun HomeView() {
     val application = LocalContext.current.applicationContext as Application
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -123,38 +123,6 @@ fun HomeView(mainViewModel: MainViewModel, historyViewModel: HistoryViewModel) {
                 AiEntity()
             }
             Spacer(Modifier.height(80.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                ActionIcons(
-                    Icons.Rounded.History,
-                    false,
-                    Constants.VIEWS.HISTORY_VIEW.str,
-                    mainViewModel,
-                    historyViewModel
-                )
-                Spacer(Modifier.width(16.dp))
-                Box(contentAlignment = Alignment.Center) {
-                    ActionIcons(
-                        FeatherIcons.MessageCircle,
-                        true,
-                        Constants.VIEWS.CHAT_VIEW.str,
-                        mainViewModel,
-                        historyViewModel
-                    )
-
-                }
-                Spacer(Modifier.width(16.dp))
-                ActionIcons(
-                    Icons.Rounded.GraphicEq,
-                    false,
-                    Constants.VIEWS.VOICE_VIEW.str,
-                    mainViewModel,
-                    historyViewModel
-                )
-            }
-            Spacer(Modifier.height(32.dp))
             Row(modifier = Modifier.clickable {
                 openUrlInBrowser(application, "https://www.nimbleedge.com/contact")
             }) {
@@ -184,104 +152,5 @@ fun AiEntity() {
             progress = progress,
             modifier = Modifier.fillMaxSize()
         )
-    }
-}
-
-@Composable
-fun ActionIcons(
-    imageVector: ImageVector,
-    isPrimary: Boolean,
-    navigateTo: String,
-    mainViewModel: MainViewModel,
-    historyViewModel: HistoryViewModel
-) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
-    val buttonBackground by infiniteTransition.animateColor(
-        initialValue = accentLow2,
-        targetValue = accentHigh1,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
-    val primaryIconTint by infiniteTransition.animateColor(
-        initialValue = Color.White,
-        targetValue = accentLow1,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        CoachMarkOverChatIcon(isVisible = (navigateTo == Constants.VIEWS.CHAT_VIEW.str && !mainViewModel.hasUserEverClickedOnChat()))
-
-        Box(
-            modifier = Modifier
-                .graphicsLayer {
-                    if (isPrimary) {
-                        scaleX = scale
-                        scaleY = scale
-                    }
-                }
-                .height(if (isPrimary) 64.dp else 52.dp)
-                .width(if (isPrimary) 64.dp else 52.dp)
-                .clip(CircleShape)
-                .background(if (isPrimary) buttonBackground else accentLow2)
-                .clickable {
-                    if (navigateTo == Constants.VIEWS.CHAT_VIEW.str) mainViewModel.registerUserTapToChat()
-                    if (navigateTo == Constants.VIEWS.HISTORY_VIEW.str) historyViewModel.updateChatHistory()
-
-                    GlobalState.navController!!.navigate(navigateTo)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = imageVector,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = if (isPrimary) primaryIconTint else Color.White
-            )
-        }
-    }
-}
-
-@Composable
-fun CoachMarkOverChatIcon(isVisible: Boolean) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val yFloat by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = -12f,
-        animationSpec = infiniteRepeatable(
-            tween(1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
-    Box(
-        modifier = Modifier
-            .offset(y = yFloat.dp)
-    ) {
-        Box(
-            Modifier.height(24.dp)
-        ) {
-            if (isVisible) {
-                Text(
-                    "Tap to Chat",
-                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-        }
     }
 }
