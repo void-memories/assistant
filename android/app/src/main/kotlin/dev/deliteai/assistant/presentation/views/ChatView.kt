@@ -7,20 +7,10 @@
 package dev.deliteai.assistant.presentation.views
 
 import ScrollableTextSuggestions
-import dev.deliteai.assistant.domain.models.ChatMessage
-import dev.deliteai.assistant.presentation.components.MessageBox
-import dev.deliteai.assistant.presentation.components.StyledTextField
-import dev.deliteai.assistant.presentation.components.TopBar
-import dev.deliteai.assistant.presentation.components.VoiceOverlay
-import dev.deliteai.assistant.presentation.ui.theme.accent
-import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
-import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
-import dev.deliteai.assistant.presentation.ui.theme.textSecondary
-import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
-import dev.deliteai.assistant.utils.Constants
 import android.app.Application
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -28,6 +18,8 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
@@ -79,16 +71,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import dev.deliteai.assistant.domain.models.ChatMessage
+import dev.deliteai.assistant.presentation.components.MessageBox
+import dev.deliteai.assistant.presentation.components.StyledTextField
+import dev.deliteai.assistant.presentation.components.TopBar
+import dev.deliteai.assistant.presentation.components.VoiceOverlay
+import dev.deliteai.assistant.presentation.ui.theme.accent
+import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
+import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
+import dev.deliteai.assistant.presentation.ui.theme.textSecondary
+import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
+import dev.deliteai.assistant.utils.Constants
 import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
 fun ChatView(
     chatViewModel: ChatViewModel,
-    navController: NavController,
-    isVoiceOverlayRequested: Boolean,
-    chatId: String? = null
+    chatId: String? = null,
+    isNavBarVisible: Boolean
 ) {
     val pendingOutput by chatViewModel.outputStream
     val chats by chatViewModel.chatHistory
@@ -129,11 +130,6 @@ fun ChatView(
             )
             withFrameNanos { }
         }
-    }
-
-
-    LaunchedEffect(isVoiceOverlayRequested) {
-        chatViewModel.isOverlayVisible.value = isVoiceOverlayRequested
     }
 
     LaunchedEffect(Unit) {
@@ -178,7 +174,6 @@ fun ChatView(
             ) {
                 TopBar(
                     chatViewModel,
-                    navController = navController,
                     isLoading = isHistoryLoadInProgress,
                     title = chatViewModel.topBarTitle.value
                 )
@@ -244,7 +239,7 @@ fun ChatView(
                             item { Spacer(Modifier.height(12.dp)) }
                         }
                     }
-                    Box(Modifier.padding(top = 8.dp)) {
+                    Box(Modifier.padding(top = 8.dp, bottom = 12.dp)) {
                         Column {
                             ScrollableTextSuggestions(!chatViewModel.isFirstMessageSent.value && !isHistoryLoadInProgress) {
                                 keyboardController?.hide()
@@ -252,7 +247,7 @@ fun ChatView(
                                 chatViewModel.addNewMessageToChatHistory(it, true)
                                 chatViewModel.getLLMTextFromTextInput(it)
                             }
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(12.dp))
 
                             StyledTextField(
                                 isHistoryLoadInProgress,
@@ -264,6 +259,14 @@ fun ChatView(
                                     }
                                 })
                         }
+                    }
+
+                    AnimatedVisibility(
+                        visible = isNavBarVisible,
+                        enter   = expandVertically(animationSpec = tween(300)),
+                        exit    = shrinkVertically(animationSpec = tween(300))
+                    ) {
+                        Spacer(Modifier.height(52.dp))
                     }
                 }
             }

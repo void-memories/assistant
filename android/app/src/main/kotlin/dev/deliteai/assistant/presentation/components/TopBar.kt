@@ -6,24 +6,17 @@
 
 package dev.deliteai.assistant.presentation.components
 
-import dev.deliteai.assistant.presentation.ui.theme.accent
-import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
-import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
-import dev.deliteai.assistant.utils.Constants
 import android.app.Application
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material3.HorizontalDivider
@@ -39,13 +32,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
+import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
 
 @Composable
 fun TopBar(
     chatViewModel: ChatViewModel,
     isHistoryView: Boolean = false,
-    navController: NavController,
     isLoading: Boolean = false,
     title: String?
 ) {
@@ -56,23 +49,10 @@ fun TopBar(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 24.dp)
+                .padding(horizontal = 24.dp)
                 .height(56.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                contentDescription = "back",
-                tint = accent,
-                modifier = Modifier
-                    .size(20.dp)
-                    .clickable {
-                        navController.popBackStack()
-                    }
-            )
-
-            Spacer(Modifier.width(12.dp))
-
             Text(
                 title ?: "",
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -92,7 +72,7 @@ fun TopBar(
                     )
                         .show()
                 } else if (isHistoryView) {
-                    navController.navigate(Constants.VIEWS.VOICE_VIEW.str)
+//                    navController.navigate(Constants.VIEWS.VOICE_VIEW.str)
                 } else {
                     chatViewModel.isOverlayVisible.value = true
                 }
@@ -116,7 +96,7 @@ fun TopBar(
                     )
                         .show()
                 } else if (isHistoryView) {
-                    navController.navigate(Constants.VIEWS.CHAT_VIEW.str)
+//                    navController.navigate(Constants.VIEWS.CHAT_VIEW.str)
                 }
 
                 chatViewModel.clearContextAndStartNewChat()

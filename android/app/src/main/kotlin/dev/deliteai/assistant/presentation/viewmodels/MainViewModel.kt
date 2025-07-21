@@ -6,17 +6,6 @@
 
 package dev.deliteai.assistant.presentation.viewmodels
 
-import dev.deliteai.assistant.domain.features.asr.ASRService
-import dev.deliteai.assistant.domain.repositories.CacheRepository
-import dev.deliteai.assistant.domain.repositories.RemoteConfigRepository
-import dev.deliteai.assistant.utils.AssetDataCopier
-import dev.deliteai.assistant.utils.Constants.assetFoldersToCopy
-import dev.deliteai.assistant.utils.DeviceTier
-import dev.deliteai.assistant.utils.FillerAudioProvider
-import dev.deliteai.assistant.utils.GlobalState
-import dev.deliteai.assistant.utils.TAG
-import dev.deliteai.assistant.utils.getActiveDownloadProgress
-import dev.deliteai.assistant.utils.initializeNimbleNetAndWaitForIsReady
 import android.app.Activity
 import android.app.Application
 import android.util.Log
@@ -25,6 +14,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.play.core.review.ReviewManagerFactory
+import dev.deliteai.assistant.domain.features.asr.ASRService
+import dev.deliteai.assistant.domain.repositories.CacheRepository
+import dev.deliteai.assistant.domain.repositories.RemoteConfigRepository
+import dev.deliteai.assistant.utils.AssetDataCopier
+import dev.deliteai.assistant.utils.Constants
+import dev.deliteai.assistant.utils.Constants.assetFoldersToCopy
+import dev.deliteai.assistant.utils.DeviceTier
+import dev.deliteai.assistant.utils.FillerAudioProvider
+import dev.deliteai.assistant.utils.GlobalState
+import dev.deliteai.assistant.utils.TAG
+import dev.deliteai.assistant.utils.getActiveDownloadProgress
+import dev.deliteai.assistant.utils.initializeNimbleNetAndWaitForIsReady
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -53,7 +54,22 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     var isFirstBootVS = mutableStateOf(true)
 
     var selectedNavBarIndex = mutableIntStateOf(0)
+    var isNavBarVisible = mutableStateOf(true)
 
+    fun switchTab(view: Constants.VIEWS) {
+        when (view) {
+            Constants.VIEWS.HOME_VIEW -> selectedNavBarIndex.intValue = 0
+            Constants.VIEWS.HISTORY_VIEW -> selectedNavBarIndex.intValue = 1
+            Constants.VIEWS.CHAT_VIEW -> {
+                selectedNavBarIndex.intValue = 2
+                isNavBarVisible.value = false
+            }
+
+            Constants.VIEWS.VOICE_VIEW -> selectedNavBarIndex.intValue = 3
+        }
+    }
+
+    //TODO: call this
     fun initializeApplication() {
         viewModelScope.launch(Dispatchers.IO) {
             val progressJob = startDummyProgress(20)

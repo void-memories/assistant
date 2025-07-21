@@ -13,40 +13,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.deliteai.assistant.presentation.ui.theme.NimbleEdgeChatBotTheme
-import dev.deliteai.assistant.presentation.ui.theme.accentHigh1
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
 import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
-import dev.deliteai.assistant.presentation.views.ChatView
-import dev.deliteai.assistant.presentation.views.HistoryView
-import dev.deliteai.assistant.presentation.views.home.HomeView
-import dev.deliteai.assistant.presentation.views.InitStatusView
-import dev.deliteai.assistant.presentation.views.IntroductionPage
-import dev.deliteai.assistant.presentation.views.NoAccessView
 import dev.deliteai.assistant.presentation.views.Root
 import dev.deliteai.assistant.utils.AudioPermissionLauncher
-import dev.deliteai.assistant.utils.Constants
-import dev.deliteai.assistant.utils.GlobalState
 
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels {
@@ -124,7 +108,7 @@ fun Router(
 
     val navController = rememberNavController()
 
-    Root(navController, mainViewModel)
+    Root(mainViewModel, historyViewModel, chatViewModel)
 
 //    if (mainViewModel.isP0LoadingVS.value && mainViewModel.blockedUsageMessageVS.value == null) {
 //        Box(

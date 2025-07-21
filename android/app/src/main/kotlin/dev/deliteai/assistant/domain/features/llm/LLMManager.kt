@@ -39,6 +39,8 @@ object LLMManager {
     }
 
     suspend fun getLLMName(): String? {
+        //TODO: revert
+        return "Mod2.4"
         val res = NimbleNet.runMethod("get_llm_name", hashMapOf())
         return res.payload?.get("name")?.data as String?
     }

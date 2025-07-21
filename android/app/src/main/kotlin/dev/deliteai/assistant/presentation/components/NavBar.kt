@@ -1,5 +1,10 @@
 package dev.deliteai.assistant.presentation.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,55 +22,94 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Assistant
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import dev.deliteai.assistant.domain.models.NavItem
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
 import dev.deliteai.assistant.utils.Constants
 
 @Composable
-fun NavBar(navController: NavController, mainViewModel: MainViewModel) {
+fun NavBar(mainViewModel: MainViewModel) {
+    val isExpanded by mainViewModel.isNavBarVisible
     val selectedIndex by mainViewModel.selectedNavBarIndex
 
-    val navItems = listOf(
-        NavItem(Icons.Default.Home, Constants.VIEWS.HOME_VIEW),
-        NavItem(Icons.Default.History, Constants.VIEWS.HOME_VIEW),
-        NavItem(Icons.AutoMirrored.Filled.Message, Constants.VIEWS.HOME_VIEW),
-        NavItem(Icons.Default.Assistant, Constants.VIEWS.HOME_VIEW),
-        NavItem(Icons.Default.AccountCircle, Constants.VIEWS.HOME_VIEW),
+    val containerHeight by animateDpAsState(
+        targetValue = if (isExpanded) 52.dp else 24.dp,
+        animationSpec = tween(durationMillis = 300, easing = LinearEasing)
     )
 
-    fun navigateTo(index: Int, view: Constants.VIEWS) {
-        mainViewModel.selectedNavBarIndex.intValue = index
-        navController.navigate(view.str)
-    }
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+    )
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isExpanded) backgroundSecondary else Color.Transparent,
+        animationSpec = tween(durationMillis = 100, easing = LinearEasing)
+    )
 
     Box(
         modifier = Modifier
-            .height(48.dp)
+            .padding(horizontal = 24.dp, vertical = if (isExpanded) 24.dp else 0.dp)
             .fillMaxWidth()
-            .background(backgroundSecondary, shape = RoundedCornerShape(8.dp))
+            .height(containerHeight)
+            .background(
+                backgroundColor,
+                shape = if (isExpanded)
+                    RoundedCornerShape(8.dp)
+                else
+                    RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+            )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            navItems.forEachIndexed { index, item ->
-                NavBarItem(
-                    icon = item.icon,
-                    isSelected = selectedIndex == index
-                ) { navigateTo(index, item.view) }
+        if (isExpanded) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val navItems = listOf(
+                    NavItem(Icons.Default.Home, Constants.VIEWS.HOME_VIEW),
+                    NavItem(Icons.Default.History, Constants.VIEWS.HISTORY_VIEW),
+                    NavItem(Icons.AutoMirrored.Filled.Message, Constants.VIEWS.CHAT_VIEW),
+                    NavItem(Icons.Default.Assistant, Constants.VIEWS.HOME_VIEW),
+                    NavItem(Icons.Default.AccountCircle, Constants.VIEWS.HOME_VIEW)
+                )
+                navItems.forEachIndexed { index, item ->
+                    NavBarItem(
+                        icon = item.icon,
+                        isSelected = selectedIndex == index
+                    ) {
+                        mainViewModel.switchTab(item.view)
+                    }
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { mainViewModel.isNavBarVisible.value = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardDoubleArrowUp,
+                    contentDescription = "Show Nav Bar",
+                    modifier = Modifier
+                        .size(16.dp)
+                        .rotate(arrowRotation),
+                    tint = Color.White
+                )
             }
         }
     }
@@ -73,6 +117,10 @@ fun NavBar(navController: NavController, mainViewModel: MainViewModel) {
 
 @Composable
 fun NavBarItem(icon: ImageVector, isSelected: Boolean, onClick: () -> Unit) {
+    val alpha by animateFloatAsState(
+        targetValue = if (isSelected) 1f else 0.5f,
+        animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+    )
     Icon(
         imageVector = icon,
         contentDescription = null,
@@ -80,6 +128,6 @@ fun NavBarItem(icon: ImageVector, isSelected: Boolean, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .fillMaxHeight()
             .size(20.dp),
-        tint = Color.White.copy(alpha = if (isSelected) 1f else 0.5f)
+        tint = Color.White.copy(alpha = alpha)
     )
 }

@@ -4,20 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package dev.deliteai.assistant.presentation.views
+package dev.deliteai.assistant.presentation.views.history
 
-import dev.deliteai.assistant.domain.models.HistoryItem
-import dev.deliteai.assistant.presentation.components.HamburgerMenu
-import dev.deliteai.assistant.presentation.components.TopBar
-import dev.deliteai.assistant.presentation.ui.theme.accent
-import dev.deliteai.assistant.presentation.ui.theme.accentHigh1
-import dev.deliteai.assistant.presentation.ui.theme.accentLow2
-import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
-import dev.deliteai.assistant.presentation.ui.theme.textPrimary
-import dev.deliteai.assistant.presentation.ui.theme.textSecondary
-import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
-import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
-import dev.deliteai.assistant.utils.Constants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -68,7 +56,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import dev.deliteai.assistant.domain.models.HistoryItem
+import dev.deliteai.assistant.presentation.ui.theme.accent
+import dev.deliteai.assistant.presentation.ui.theme.accentHigh1
+import dev.deliteai.assistant.presentation.ui.theme.accentLow2
+import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
+import dev.deliteai.assistant.presentation.ui.theme.textPrimary
+import dev.deliteai.assistant.presentation.ui.theme.textSecondary
+import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -78,11 +73,8 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun HistoryView(
     historyViewModel: HistoryViewModel,
-    chatViewModel: ChatViewModel,
-    navController: NavController
 ) {
     val searchQuery = remember { mutableStateOf("") }
-    var drawerOpen by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
     val selectedItems = remember { mutableStateListOf<String>() }
     val isSelectionMode = selectedItems.isNotEmpty()
@@ -90,7 +82,6 @@ fun HistoryView(
     LaunchedEffect(Unit) {
         historyViewModel.updateChatHistory()
     }
-
 
     val clearSelectionModifier = if (isSelectionMode) {
         Modifier.pointerInput(Unit) {
@@ -104,6 +95,7 @@ fun HistoryView(
         Modifier
             .fillMaxSize()
             .then(clearSelectionModifier)
+            .padding(horizontal = 24.dp),
     ) {
 
         if (isSelectionMode) {
@@ -147,161 +139,154 @@ fun HistoryView(
                 }
             )
         } else {
-            TopBar(
-                chatViewModel = chatViewModel,
-                isHistoryView = true,
-                navController = navController,
-                title = "Your Conversations"
-            )
+            Box {}
         }
 
         Spacer(Modifier.height(20.dp))
 
-        Column(Modifier.padding(horizontal = 24.dp)) {
-
-            if (historyViewModel.chatHistory.value?.isNotEmpty() == true) {
-                BasicTextField(
-                    value = searchQuery.value,
-                    onValueChange = { searchQuery.value = it },
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = textPrimary),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .background(backgroundSecondary, shape = RoundedCornerShape(8.dp)),
-                    decorationBox = { inner ->
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 12.dp),
-                            Alignment.CenterStart
-                        ) {
-                            if (searchQuery.value.isEmpty()) {
-                                Text(
-                                    "Search...",
-                                    style = MaterialTheme.typography.bodyMedium.copy(color = textSecondary)
-                                )
-                            }
-                            inner()
-                        }
-                    }
-                )
-                Spacer(Modifier.height(16.dp))
-            }
-            when {
-                historyViewModel.chatHistory.value == null -> {
-                    Box(Modifier.fillMaxSize(), Alignment.Center) {
-                        CircularProgressIndicator(color = accentHigh1)
-                    }
-                }
-
-                historyViewModel.chatHistory.value!!.isEmpty() -> {
-                    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                        Text(
-                            "No History",
-                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            "Start a new conversation to see it here",
-                            style = MaterialTheme.typography.bodyMedium.copy(color = textSecondary),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-                else -> {
-                    val filtered = historyViewModel.chatHistory.value!!
-                        .filter {
-                            historyViewModel.searchInChatHistory(
-                                it.parentChatId,
-                                searchQuery.value
+        if (historyViewModel.chatHistory.value?.isNotEmpty() == true) {
+            BasicTextField(
+                value = searchQuery.value,
+                onValueChange = { searchQuery.value = it },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodyMedium.copy(color = textPrimary),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .background(backgroundSecondary, shape = RoundedCornerShape(8.dp)),
+                decorationBox = { inner ->
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 12.dp),
+                        Alignment.CenterStart
+                    ) {
+                        if (searchQuery.value.isEmpty()) {
+                            Text(
+                                "Search...",
+                                style = MaterialTheme.typography.bodyMedium.copy(color = textSecondary)
                             )
                         }
+                        inner()
+                    }
+                }
+            )
+            Spacer(Modifier.height(16.dp))
+        }
+        when {
+            historyViewModel.chatHistory.value == null -> {
+                Box(Modifier.fillMaxSize(), Alignment.Center) {
+                    CircularProgressIndicator(color = accentHigh1)
+                }
+            }
 
+            historyViewModel.chatHistory.value!!.isEmpty() -> {
+                Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+                    Text(
+                        "No History",
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Start a new conversation to see it here",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = textSecondary),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
 
-                    val groupedHistory: Map<String, List<HistoryItem>> = filtered.groupBy { item ->
-                        val diffDays = TimeUnit.MILLISECONDS.toDays(
-                            Calendar.getInstance().timeInMillis - item.dateTime.time
+            else -> {
+                val filtered = historyViewModel.chatHistory.value!!
+                    .filter {
+                        historyViewModel.searchInChatHistory(
+                            it.parentChatId,
+                            searchQuery.value
                         )
-                        when {
-                            diffDays == 0L -> "Today"
-                            diffDays in 1..3 -> "Previous 3 Days"
-                            diffDays in 4..7 -> "Previous 7 Days"
-                            diffDays in 8..30 -> "Previous 30 Days"
-                            else -> "Older"
-                        }
                     }
 
-                    val categoryOrder = listOf(
-                        "Today", "Previous 3 Days", "Previous 7 Days", "Previous 30 Days", "Older"
+
+                val groupedHistory: Map<String, List<HistoryItem>> = filtered.groupBy { item ->
+                    val diffDays = TimeUnit.MILLISECONDS.toDays(
+                        Calendar.getInstance().timeInMillis - item.dateTime.time
                     )
+                    when {
+                        diffDays == 0L -> "Today"
+                        diffDays in 1..3 -> "Previous 3 Days"
+                        diffDays in 4..7 -> "Previous 7 Days"
+                        diffDays in 8..30 -> "Previous 30 Days"
+                        else -> "Older"
+                    }
+                }
 
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        categoryOrder.forEach { category ->
-                            groupedHistory[category]?.let { items ->
+                val categoryOrder = listOf(
+                    "Today", "Previous 3 Days", "Previous 7 Days", "Previous 30 Days", "Older"
+                )
 
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Box(
-                                        Modifier
-                                            .weight(1f)
-                                            .height(1.dp)
-                                            .background(accentLow2)
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    categoryOrder.forEach { category ->
+                        groupedHistory[category]?.let { items ->
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Box(
+                                    Modifier
+                                        .weight(1f)
+                                        .height(1.dp)
+                                        .background(accentLow2)
+                                )
+                                Text(
+                                    category,
+                                    Modifier.padding(horizontal = 8.dp),
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = accent,
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
                                     )
-                                    Text(
-                                        category,
-                                        Modifier.padding(horizontal = 8.dp),
-                                        style = MaterialTheme.typography.bodySmall.copy(
-                                            color = accent,
-                                            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
-                                        )
-                                    )
-                                    Box(
-                                        Modifier
-                                            .weight(1f)
-                                            .height(1.dp)
-                                            .background(accentLow2)
-                                    )
-                                }
+                                )
+                                Box(
+                                    Modifier
+                                        .weight(1f)
+                                        .height(1.dp)
+                                        .background(accentLow2)
+                                )
+                            }
 
-                                Spacer(Modifier.height(12.dp))
+                            Spacer(Modifier.height(12.dp))
 
 
-                                items.forEach { historyItem ->
-                                    HistoryCardItem(
-                                        history = historyItem,
-                                        isSelected = selectedItems.contains(historyItem.parentChatId),
-                                        onClick = {
-                                            if (isSelectionMode) {
-                                                if (!selectedItems.remove(historyItem.parentChatId)) {
-                                                    selectedItems.add(historyItem.parentChatId)
-                                                }
-                                            } else {
-                                                navController.navigate("chatView/${historyItem.parentChatId}")
-                                            }
-                                        },
-                                        onLongClick = {
+                            items.forEach { historyItem ->
+                                HistoryCardItem(
+                                    history = historyItem,
+                                    isSelected = selectedItems.contains(historyItem.parentChatId),
+                                    onClick = {
+                                        if (isSelectionMode) {
                                             if (!selectedItems.remove(historyItem.parentChatId)) {
                                                 selectedItems.add(historyItem.parentChatId)
                                             }
+                                        } else {
+                                            //TODO: implement
+//                                                navController.navigate("chatView/${historyItem.parentChatId}")
                                         }
-                                    )
+                                    },
+                                    onLongClick = {
+                                        if (!selectedItems.remove(historyItem.parentChatId)) {
+                                            selectedItems.add(historyItem.parentChatId)
+                                        }
+                                    }
+                                )
 
-                                    Spacer(Modifier.height(8.dp))
-                                }
-
-                                Spacer(Modifier.height(24.dp))
+                                Spacer(Modifier.height(8.dp))
                             }
+
+                            Spacer(Modifier.height(24.dp))
                         }
                     }
                 }
@@ -332,14 +317,6 @@ fun HistoryView(
             }
         )
     }
-
-    HamburgerMenu(
-        isOpen = drawerOpen,
-        currentView = Constants.VIEWS.HISTORY_VIEW,
-        historyViewModel = historyViewModel,
-        chatViewModel = chatViewModel,
-        onDismiss = { drawerOpen = false }
-    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)

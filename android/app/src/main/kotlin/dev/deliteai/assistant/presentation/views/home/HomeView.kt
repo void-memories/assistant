@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -41,7 +40,8 @@ fun HomeView() {
             modifier = Modifier
                 .background(backgroundPrimary)
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars),
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Header(
@@ -57,21 +57,5 @@ fun HomeView() {
                 )
             )
         }
-    }
-}
-
-@Composable
-fun AiEntity() {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_teal))
-    val progress by animateLottieCompositionAsState(
-        composition = composition,
-        iterations = LottieConstants.IterateForever
-    )
-    Box(Modifier.padding(bottom = 72.dp)) {
-        LottieAnimation(
-            composition = composition,
-            progress = progress,
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }
