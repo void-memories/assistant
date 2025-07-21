@@ -52,7 +52,7 @@ fun NavBar(navController: NavController, mainViewModel: MainViewModel) {
         modifier = Modifier
             .height(48.dp)
             .fillMaxWidth()
-            .background(backgroundSecondary, shape = RoundedCornerShape(12.dp))
+            .background(backgroundSecondary, shape = RoundedCornerShape(8.dp))
     ) {
         Row(
             modifier = Modifier

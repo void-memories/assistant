@@ -121,4 +121,8 @@ dependencies {
     implementation("nl.dionsegijn:konfetti-compose:2.0.5")
     implementation("com.google.android.play:review:2.0.2")
     implementation("com.google.android.play:review-ktx:2.0.2")
+
+    implementation("com.google.accompanist:accompanist-pager:0.36.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("org.jsoup:jsoup:1.16.2")
 }
