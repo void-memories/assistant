@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -121,13 +123,22 @@ fun NavBarItem(icon: ImageVector, isSelected: Boolean, onClick: () -> Unit) {
         targetValue = if (isSelected) 1f else 0.5f,
         animationSpec = tween(durationMillis = 300, easing = LinearEasing)
     )
-    Icon(
-        imageVector = icon,
-        contentDescription = null,
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .fillMaxHeight()
-            .size(20.dp),
-        tint = Color.White.copy(alpha = alpha)
-    )
+    Box(
+        modifier = Modifier.run {
+            size(32.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onClick)
+        },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier
+                .clip(CircleShape)
+                .fillMaxHeight()
+                .size(20.dp),
+            tint = Color.White.copy(alpha = alpha)
+        )
+    }
 }
