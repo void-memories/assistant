@@ -85,7 +85,7 @@ fun NavBar(mainViewModel: MainViewModel) {
                     NavItem(Icons.Default.Home, Constants.VIEWS.HOME_VIEW),
                     NavItem(Icons.Default.History, Constants.VIEWS.HISTORY_VIEW),
                     NavItem(Icons.AutoMirrored.Filled.Message, Constants.VIEWS.CHAT_VIEW),
-                    NavItem(Icons.Default.Assistant, Constants.VIEWS.HOME_VIEW),
+                    NavItem(Icons.Default.Assistant, Constants.VIEWS.AGENT_VIEW),
                     NavItem(Icons.Default.AccountCircle, Constants.VIEWS.ABOUT_VIEW)
                 )
                 navItems.forEachIndexed { index, item ->

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package dev.deliteai.assistant.presentation.views
+package dev.deliteai.assistant.presentation.views.chat
 
 import ScrollableTextSuggestions
 import android.app.Application

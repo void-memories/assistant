@@ -43,12 +43,12 @@ object Constants {
         )
     )
 
-    enum class VIEWS(val str: String) {
-        HOME_VIEW("homeView"),
-        HISTORY_VIEW("historyView"),
-        CHAT_VIEW("chatView"),
-        AGENT_VIEW("agentView"),
-        ABOUT_VIEW("aboutView")
+    enum class VIEWS {
+        HOME_VIEW,
+        HISTORY_VIEW,
+        CHAT_VIEW,
+        AGENT_VIEW,
+        ABOUT_VIEW
     }
 
     enum class MESSAGE_LONG_TAP_ACTIONS {
