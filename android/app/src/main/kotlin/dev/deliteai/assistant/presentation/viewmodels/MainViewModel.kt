@@ -64,8 +64,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                 selectedNavBarIndex.intValue = 2
                 isNavBarVisible.value = false
             }
-
-            Constants.VIEWS.VOICE_VIEW -> selectedNavBarIndex.intValue = 3
+            Constants.VIEWS.AGENT_VIEW -> selectedNavBarIndex.intValue = 3
+            Constants.VIEWS.ABOUT_VIEW -> selectedNavBarIndex.intValue = 4
         }
     }
 

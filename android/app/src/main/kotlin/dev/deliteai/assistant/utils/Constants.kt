@@ -47,10 +47,11 @@ object Constants {
         HOME_VIEW("homeView"),
         HISTORY_VIEW("historyView"),
         CHAT_VIEW("chatView"),
-        VOICE_VIEW("voiceOverlayView")
+        AGENT_VIEW("agentView"),
+        ABOUT_VIEW("aboutView")
     }
 
-    enum class MESSAGE_LONG_TAP_ACTIONS(){
+    enum class MESSAGE_LONG_TAP_ACTIONS {
         COPY,
         FLAG
     }

@@ -18,6 +18,7 @@ import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
 import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
+import dev.deliteai.assistant.presentation.views.about.AboutView
 import dev.deliteai.assistant.presentation.views.history.HistoryView
 import dev.deliteai.assistant.presentation.views.home.HomeView
 
@@ -43,10 +44,11 @@ fun Root(
             when (mainViewModel.selectedNavBarIndex.intValue) {
                 0 -> HomeView()
                 1 -> HistoryView(historyViewModel)
-                else -> ChatView(
+                2 -> ChatView(
                     chatViewModel,
                     isNavBarVisible = mainViewModel.isNavBarVisible.value
                 )
+                4 -> AboutView()
             }
 
         }
