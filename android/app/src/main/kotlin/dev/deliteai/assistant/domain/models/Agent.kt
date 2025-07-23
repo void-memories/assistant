@@ -1,6 +1,14 @@
 package dev.deliteai.assistant.domain.models
 
-enum class RuntimePermission(val androidPermission: String) {
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import dev.deliteai.assistant.R
+import dev.deliteai.assistant.presentation.ui.theme.accentLow1
+
+enum class AppPermission(val androidPermission: String) {
     POST_NOTIFICATION("android.permission.POST_NOTIFICATIONS"),
     READ_NOTIFICATION("android.permission.READ_NOTIFICATION")
 }
@@ -13,9 +21,10 @@ data class Agent(
     val id: String,
     val name: String,
     val description: String,
-    val requiredPermissions: Set<RuntimePermission> = emptySet(),
+    val requiredPermissions: Set<PermissionItem> = emptySet(),
     val settings: List<AgentSetting> = emptyList(),
     val image: Int,
+    val highlight: Color = accentLow1
 )
 
 data class AgentSetting(
@@ -23,4 +32,65 @@ data class AgentSetting(
     val description: String,
     val inputType: InputType,
     val defaultValue: Any? = null,
+)
+
+data class PermissionItem(
+    val name: String,
+    val icon: ImageVector,
+    val runtimePermission: AppPermission
+)
+
+val agents = listOf(
+    Agent(
+        id = "id",
+        name = "Notification Summarizer",
+        description = "Get summary of your notifications every time you wake up",
+        requiredPermissions = setOf(
+            PermissionItem(
+                name = "Post Notifications",
+                icon = Icons.Filled.Notifications,
+                runtimePermission = AppPermission.POST_NOTIFICATION
+            ),
+            PermissionItem(
+                name = "Read Notifications",
+                icon = Icons.Filled.Notifications,
+                runtimePermission = AppPermission.READ_NOTIFICATION
+            )
+        ),
+        settings = listOf(
+            AgentSetting(
+                name = "Wake‑up time",
+                description = "We’ll keep the summary ready before this time.",
+                inputType = InputType.TIME
+            ),
+            AgentSetting(
+                name = "Autoplay summary",
+                description = "We’ll start playing the summary via on‑device TTS at your scheduled wake‑up time.",
+                inputType = InputType.BOOL
+            ),
+        ),
+        image = R.drawable.ag_notification_summarizer,
+        highlight = Color(0xff5A4900)
+    ),
+    Agent(
+        id = "id2",
+        name = "Gmail Agent",
+        description = "Get summary of your unread emails",
+        requiredPermissions = setOf(
+            PermissionItem(
+                name = "Read Notifications",
+                icon = Icons.Filled.MailOutline,
+                runtimePermission = AppPermission.READ_NOTIFICATION
+            )
+        ),
+        settings = listOf(
+            AgentSetting(
+                name = "Wake‑up time",
+                description = "We’ll keep the summary ready before this time.",
+                inputType = InputType.TIME
+            ),
+        ),
+        image = R.drawable.ag_gmail_agent,
+        highlight = Color(0xff471B1B)
+    )
 )

@@ -59,7 +59,7 @@ fun AboutView() {
             LogoSection()
             Spacer(modifier = Modifier.height(16.dp))
             TitleSection()
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             DescriptionSection()
             SocialMediaSection(
                 listOf(
@@ -110,7 +110,7 @@ private fun LogoSection() {
 private fun TitleSection() {
     Text(
         text = "NimbleEdge AI",
-        style = MaterialTheme.typography.headlineSmall,
+        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
         color = Color.White
     )
 }

@@ -13,13 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.deliteai.assistant.domain.models.agents
 import dev.deliteai.assistant.presentation.components.NavBar
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
 import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
 import dev.deliteai.assistant.presentation.views.about.AboutView
-import dev.deliteai.assistant.presentation.views.agent.AgentView
+import dev.deliteai.assistant.presentation.views.agent.AgentInfoView
+import dev.deliteai.assistant.presentation.views.agent.AgentsView
 import dev.deliteai.assistant.presentation.views.chat.ChatView
 import dev.deliteai.assistant.presentation.views.history.HistoryView
 import dev.deliteai.assistant.presentation.views.home.HomeView
@@ -50,8 +52,7 @@ fun Root(
                     chatViewModel,
                     isNavBarVisible = mainViewModel.isNavBarVisible.value
                 )
-
-                3 -> AgentView()
+                3 -> AgentInfoView(agents[0])
                 4 -> AboutView()
             }
 

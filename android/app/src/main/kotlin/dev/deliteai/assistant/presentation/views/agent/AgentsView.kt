@@ -31,7 +31,7 @@ import dev.deliteai.assistant.R
 import dev.deliteai.assistant.domain.models.Agent
 import dev.deliteai.assistant.domain.models.AgentSetting
 import dev.deliteai.assistant.domain.models.InputType
-import dev.deliteai.assistant.domain.models.RuntimePermission
+import dev.deliteai.assistant.domain.models.agents
 import dev.deliteai.assistant.presentation.components.Header
 import dev.deliteai.assistant.presentation.components.HeroCarousel
 import dev.deliteai.assistant.presentation.components.TwoTabToggle
@@ -39,43 +39,8 @@ import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
 
 @Composable
-fun AgentView() {
+fun AgentsView() {
     val selectedTabIndex = remember { mutableStateOf(0) }
-    val agents = listOf(
-        Agent(
-            "id",
-            "Notification Summarizer",
-            "Get summary of your notifications everytime you wake up",
-            setOf(RuntimePermission.POST_NOTIFICATION, RuntimePermission.READ_NOTIFICATION),
-            listOf(
-                AgentSetting(
-                    "Wake-up time",
-                    "We’ll keep the summary ready before this time.",
-                    InputType.TIME
-                ),
-                AgentSetting(
-                    "Autoplay summary",
-                    "We’ll start playing the summary using on device TTS on your scheduled wake up time.",
-                    InputType.BOOL
-                ),
-            ),
-            R.drawable.ag_notification_summarizer
-        ),
-        Agent(
-            "id2",
-            "Gmail Agent",
-            "Get summary of your unread emails",
-            setOf(RuntimePermission.POST_NOTIFICATION, RuntimePermission.READ_NOTIFICATION),
-            listOf(
-                AgentSetting(
-                    "Wake-up time",
-                    "We’ll keep the summary ready before this time.",
-                    InputType.TIME
-                ),
-            ),
-            R.drawable.ag_gmail_agent
-        ),
-    )
 
     Column(
         Modifier
@@ -110,7 +75,6 @@ fun ColumnScope.AgentGrid(agents: List<Agent>) {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(agents) {
-            //i want this to take equal width
             AgentCard(it)
         }
     }
