@@ -108,7 +108,7 @@ fun PermissionTile(permission: PermissionItem, highlight: Color) {
     ) {
         Box(
             Modifier
-                .size(50.dp)
+                .size(64.dp)
                 .background(
                     if (isGranted) backgroundSecondary else highlight, shape =
                     RoundedCornerShape(8.dp)

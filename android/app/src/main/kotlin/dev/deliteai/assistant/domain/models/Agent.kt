@@ -3,6 +3,7 @@ package dev.deliteai.assistant.domain.models
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import dev.deliteai.assistant.R
@@ -53,7 +54,7 @@ val agents = listOf(
             ),
             PermissionItem(
                 name = "Read Notifications",
-                icon = Icons.Filled.Notifications,
+                icon = Icons.Filled.RemoveRedEye,
                 runtimePermission = AppPermission.READ_NOTIFICATION
             )
         ),
