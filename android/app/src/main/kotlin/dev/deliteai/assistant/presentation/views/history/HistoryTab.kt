@@ -71,7 +71,7 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryView(
+fun HistoryTab(
     historyViewModel: HistoryViewModel,
 ) {
     val searchQuery = remember { mutableStateOf("") }

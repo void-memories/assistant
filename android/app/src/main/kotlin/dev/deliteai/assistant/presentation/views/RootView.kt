@@ -19,16 +19,15 @@ import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
 import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
-import dev.deliteai.assistant.presentation.views.about.AboutView
-import dev.deliteai.assistant.presentation.views.agent.AgentInfoView
+import dev.deliteai.assistant.presentation.views.about.AboutTab
 import dev.deliteai.assistant.presentation.views.agent.AgentSettingsView
-import dev.deliteai.assistant.presentation.views.agent.AgentsView
-import dev.deliteai.assistant.presentation.views.chat.ChatView
-import dev.deliteai.assistant.presentation.views.history.HistoryView
-import dev.deliteai.assistant.presentation.views.home.HomeView
+import dev.deliteai.assistant.presentation.views.agent.AgentsTab
+import dev.deliteai.assistant.presentation.views.chat.ChatTab
+import dev.deliteai.assistant.presentation.views.history.HistoryTab
+import dev.deliteai.assistant.presentation.views.home.HomeTab
 
 @Composable
-fun Root(
+fun RootView(
     mainViewModel: MainViewModel,
     historyViewModel: HistoryViewModel,
     chatViewModel: ChatViewModel
@@ -36,7 +35,6 @@ fun Root(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
             modifier = Modifier
@@ -47,14 +45,14 @@ fun Root(
             Spacer(Modifier.height(24.dp))
 
             when (mainViewModel.selectedNavBarIndex.intValue) {
-                0 -> HomeView()
-                1 -> HistoryView(historyViewModel)
-                2 -> ChatView(
+                0 -> HomeTab()
+                1 -> HistoryTab(historyViewModel)
+                2 -> ChatTab(
                     chatViewModel,
                     isNavBarVisible = mainViewModel.isNavBarVisible.value
                 )
-                3 -> AgentSettingsView(agents[0].settings)
-                4 -> AboutView()
+                3 -> AgentsTab()
+                4 -> AboutTab()
             }
 
         }

@@ -8,7 +8,6 @@ package dev.deliteai.assistant.presentation.views
 
 import dev.deliteai.assistant.R
 import dev.deliteai.assistant.presentation.ui.theme.accent
-import dev.deliteai.assistant.presentation.ui.theme.accentLow2
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
 import dev.deliteai.assistant.presentation.ui.theme.textSecondary
@@ -57,11 +56,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlin.math.min
 
 @Composable
-fun IntroductionPage(modifier: Modifier = Modifier, onProceed: () -> Unit) {
+fun IntroductionView(modifier: Modifier = Modifier, onProceed: () -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
     val application = LocalContext.current.applicationContext as Application
 

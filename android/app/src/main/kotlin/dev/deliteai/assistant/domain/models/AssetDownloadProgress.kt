@@ -6,11 +6,25 @@
 
 package dev.deliteai.assistant.domain.models
 
+import org.json.JSONObject
+
 data class AssetDownloadProgress(
     val name: String,
     val downloadPercentage: Int
 ){
     override fun toString(): String {
-        return "$name:$downloadPercentage"
+        val json = JSONObject()
+        json.put("name", name)
+        json.put("downloadPercentage", downloadPercentage)
+        return json.toString()
+    }
+
+    companion object {
+        fun fromString(str: String): AssetDownloadProgress {
+            val json = JSONObject(str)
+            val name = json.getString("name")
+            val downloadPercentage = json.getInt("downloadPercentage")
+            return AssetDownloadProgress(name, downloadPercentage)
+        }
     }
 }

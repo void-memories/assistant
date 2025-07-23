@@ -56,16 +56,16 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     var selectedNavBarIndex = mutableIntStateOf(0)
     var isNavBarVisible = mutableStateOf(true)
 
-    fun switchTab(view: Constants.VIEWS) {
+    fun switchTab(view: Constants.TAB) {
         when (view) {
-            Constants.VIEWS.HOME_VIEW -> selectedNavBarIndex.intValue = 0
-            Constants.VIEWS.HISTORY_VIEW -> selectedNavBarIndex.intValue = 1
-            Constants.VIEWS.CHAT_VIEW -> {
+            Constants.TAB.HOME_TAB -> selectedNavBarIndex.intValue = 0
+            Constants.TAB.HISTORY_TAB -> selectedNavBarIndex.intValue = 1
+            Constants.TAB.CHAT_TAB -> {
                 selectedNavBarIndex.intValue = 2
                 isNavBarVisible.value = false
             }
-            Constants.VIEWS.AGENT_VIEW -> selectedNavBarIndex.intValue = 3
-            Constants.VIEWS.ABOUT_VIEW -> selectedNavBarIndex.intValue = 4
+            Constants.TAB.AGENT_TAB -> selectedNavBarIndex.intValue = 3
+            Constants.TAB.ABOUT_TAB -> selectedNavBarIndex.intValue = 4
         }
     }
 

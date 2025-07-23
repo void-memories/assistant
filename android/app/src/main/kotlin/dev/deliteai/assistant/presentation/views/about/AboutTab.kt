@@ -44,7 +44,7 @@ private fun handlePrivacyLink() {
 }
 
 @Composable
-fun AboutView() {
+fun AboutTab() {
     Box(
         modifier = Modifier
             .fillMaxSize()

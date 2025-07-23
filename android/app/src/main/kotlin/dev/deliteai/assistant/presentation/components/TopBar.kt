@@ -72,7 +72,7 @@ fun TopBar(
                     )
                         .show()
                 } else if (isHistoryView) {
-//                    navController.navigate(Constants.VIEWS.VOICE_VIEW.str)
+//                    navController.navigate(Constants.VIEW.VOICE_VIEW.str)
                 } else {
                     chatViewModel.isOverlayVisible.value = true
                 }
@@ -96,7 +96,7 @@ fun TopBar(
                     )
                         .show()
                 } else if (isHistoryView) {
-//                    navController.navigate(Constants.VIEWS.CHAT_VIEW.str)
+//                    navController.navigate(Constants.VIEW.CHAT_VIEW.str)
                 }
 
                 chatViewModel.clearContextAndStartNewChat()

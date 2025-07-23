@@ -82,18 +82,18 @@ fun NavBar(mainViewModel: MainViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val navItems = listOf(
-                    NavItem(Icons.Default.Home, Constants.VIEWS.HOME_VIEW),
-                    NavItem(Icons.Default.History, Constants.VIEWS.HISTORY_VIEW),
-                    NavItem(Icons.AutoMirrored.Filled.Message, Constants.VIEWS.CHAT_VIEW),
-                    NavItem(Icons.Default.Assistant, Constants.VIEWS.AGENT_VIEW),
-                    NavItem(Icons.Default.AccountCircle, Constants.VIEWS.ABOUT_VIEW)
+                    NavItem(Icons.Default.Home, Constants.TAB.HOME_TAB),
+                    NavItem(Icons.Default.History, Constants.TAB.HISTORY_TAB),
+                    NavItem(Icons.AutoMirrored.Filled.Message, Constants.TAB.CHAT_TAB),
+                    NavItem(Icons.Default.Assistant, Constants.TAB.AGENT_TAB),
+                    NavItem(Icons.Default.AccountCircle, Constants.TAB.ABOUT_TAB)
                 )
                 navItems.forEachIndexed { index, item ->
                     NavBarItem(
                         icon = item.icon,
                         isSelected = selectedIndex == index
                     ) {
-                        mainViewModel.switchTab(item.view)
+                        mainViewModel.switchTab(item.tab)
                     }
                 }
             }

@@ -43,12 +43,18 @@ object Constants {
         )
     )
 
-    enum class VIEWS {
-        HOME_VIEW,
-        HISTORY_VIEW,
-        CHAT_VIEW,
-        AGENT_VIEW,
-        ABOUT_VIEW
+    enum class VIEW {
+        ROOT_VIEW,
+        AGENT_INFO_VIEW,
+        AGENT_SETTINGS_VIEW,
+    }
+
+    enum class TAB {
+        HOME_TAB,
+        HISTORY_TAB,
+        CHAT_TAB,
+        AGENT_TAB,
+        ABOUT_TAB
     }
 
     enum class MESSAGE_LONG_TAP_ACTIONS {

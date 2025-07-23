@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
-fun ChatView(
+fun ChatTab(
     chatViewModel: ChatViewModel,
     chatId: String? = null,
     isNavBarVisible: Boolean

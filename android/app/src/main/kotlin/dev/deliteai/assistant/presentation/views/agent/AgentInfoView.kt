@@ -3,6 +3,7 @@ package dev.deliteai.assistant.presentation.views.agent
 import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,10 @@ import dev.deliteai.assistant.presentation.ui.theme.accent
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
 import dev.deliteai.assistant.utils.isPermissionGranted
+import dev.deliteai.assistant.utils.Constants
+import dev.deliteai.assistant.utils.GlobalState
+import org.json.JSONArray
+import org.json.JSONObject
 
 @Composable
 fun AgentInfoView(agent: Agent) {
@@ -63,7 +68,18 @@ fun AgentInfoView(agent: Agent) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(agent.name, style = MaterialTheme.typography.titleMedium)
-            Icon(Icons.Default.Settings, null, tint = accent)
+            Icon(
+                Icons.Default.Settings, 
+                null, 
+                tint = accent,
+                modifier = Modifier.clickable {
+                    val settingsJson = JSONArray()
+                    agent.settings.forEach { setting ->
+                        settingsJson.put(JSONObject(setting.toString()))
+                    }
+                    GlobalState.navController?.navigate("${Constants.VIEW.AGENT_SETTINGS_VIEW}/${settingsJson}")
+                }
+            )
         }
 
         Spacer(Modifier.height(8.dp))

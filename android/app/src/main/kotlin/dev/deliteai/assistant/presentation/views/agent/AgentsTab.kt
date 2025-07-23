@@ -2,6 +2,7 @@ package dev.deliteai.assistant.presentation.views.agent
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,19 +28,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.deliteai.assistant.R
 import dev.deliteai.assistant.domain.models.Agent
-import dev.deliteai.assistant.domain.models.AgentSetting
-import dev.deliteai.assistant.domain.models.InputType
 import dev.deliteai.assistant.domain.models.agents
 import dev.deliteai.assistant.presentation.components.Header
 import dev.deliteai.assistant.presentation.components.HeroCarousel
 import dev.deliteai.assistant.presentation.components.TwoTabToggle
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
+import dev.deliteai.assistant.utils.Constants
+import dev.deliteai.assistant.utils.GlobalState
 
 @Composable
-fun AgentsView() {
+fun AgentsTab() {
     val selectedTabIndex = remember { mutableStateOf(0) }
 
     Column(
@@ -87,6 +87,9 @@ fun AgentCard(agent: Agent) {
             .height(220.dp)
             .background(backgroundSecondary, shape = RoundedCornerShape(12.dp))
             .padding(12.dp)
+            .clickable {
+                GlobalState.navController?.navigate("${Constants.VIEW.AGENT_INFO_VIEW}/${agent.toString()}")
+            }
     ) {
         Box(
             Modifier

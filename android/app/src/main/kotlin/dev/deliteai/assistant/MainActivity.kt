@@ -13,24 +13,41 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.deliteai.assistant.presentation.ui.theme.NimbleEdgeChatBotTheme
+import dev.deliteai.assistant.presentation.ui.theme.accentHigh1
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
 import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
-import dev.deliteai.assistant.presentation.views.Root
+import dev.deliteai.assistant.presentation.views.InitStatusView
+import dev.deliteai.assistant.presentation.views.IntroductionView
+import dev.deliteai.assistant.presentation.views.NoAccessView
+import dev.deliteai.assistant.presentation.views.RootView
+import dev.deliteai.assistant.presentation.views.agent.AgentInfoView
+import dev.deliteai.assistant.presentation.views.agent.AgentSettingsView
 import dev.deliteai.assistant.utils.AudioPermissionLauncher
+import dev.deliteai.assistant.utils.Constants
+import dev.deliteai.assistant.utils.GlobalState
+import org.json.JSONArray
+import dev.deliteai.assistant.domain.models.Agent
+import dev.deliteai.assistant.domain.models.AgentSetting
+import dev.deliteai.assistant.domain.models.agents
 
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels {
@@ -106,9 +123,6 @@ fun Router(
 //        mainViewModel.initializeApplication()
     }
 
-    val navController = rememberNavController()
-
-    Root(mainViewModel, historyViewModel, chatViewModel)
 
 //    if (mainViewModel.isP0LoadingVS.value && mainViewModel.blockedUsageMessageVS.value == null) {
 //        Box(
@@ -121,43 +135,42 @@ fun Router(
 //    } else if (mainViewModel.blockedUsageMessageVS.value != null) {
 //        NoAccessView(mainViewModel.blockedUsageMessageVS.value!!)
 //    } else if (mainViewModel.isFirstBootVS.value) {
-//        IntroductionPage(modifier = modifier) {
+//        IntroductionView(modifier = modifier) {
 //            mainViewModel.registerUserFirstBoot()
 //        }
 //    } else if (!mainViewModel.isNimbleNetReadyVS.value) {
 //        InitStatusView(mainViewModel.copyStatusVS.value, mainViewModel.copyProgressVS.value)
 //    } else {
-//        val navController = rememberNavController()
-//        GlobalState.navController = navController
-//
-//        NavHost(
-//            navController = navController,
-//            startDestination = Constants.VIEWS.HOME_VIEW.str,
-//            modifier = modifier
-//        ) {
-//            composable(Constants.VIEWS.HOME_VIEW.str) {
-//                HomeView(mainViewModel, historyViewModel)
-//            }
-//            composable(Constants.VIEWS.HISTORY_VIEW.str) {
-//                HistoryView(
-//                    historyViewModel = historyViewModel,
-//                    navController = navController,
-//                    chatViewModel = chatViewModel
-//                )
-//            }
-//            composable(Constants.VIEWS.CHAT_VIEW.str) {
-//                ChatView(chatViewModel, navController, false)
-//            }
-//            composable(
-//                route = "${Constants.VIEWS.CHAT_VIEW.str}/{chatId}",
-//                arguments = listOf(navArgument("chatId") { type = NavType.StringType })
-//            ) { backStackEntry ->
-//                val id = backStackEntry.arguments?.getString("chatId")
-//                ChatView(chatViewModel, navController, false, id)
-//            }
-//            composable(Constants.VIEWS.VOICE_VIEW.str) {
-//                ChatView(chatViewModel, navController, true)
-//            }
-//        }
+        val navController = rememberNavController()
+        GlobalState.navController = navController
+
+        NavHost(
+            navController = navController,
+            startDestination = Constants.VIEW.ROOT_VIEW.toString(),
+            modifier = modifier
+        ) {
+            composable(Constants.VIEW.ROOT_VIEW.toString()) {
+                RootView(
+                    mainViewModel = mainViewModel,
+                    historyViewModel = historyViewModel,
+                    chatViewModel = chatViewModel
+                )
+            }
+            composable("${Constants.VIEW.AGENT_INFO_VIEW}/{agentData}") { backStackEntry ->
+                val agentDataString = backStackEntry.arguments?.getString("agentData")!!
+                val agent = Agent.fromString(agentDataString)
+                AgentInfoView(agent = agent)
+            }
+            composable("${Constants.VIEW.AGENT_SETTINGS_VIEW}/{settingsData}") { backStackEntry ->
+                val settingsDataString = backStackEntry.arguments?.getString("settingsData")!!
+                // Parse JSON array of settings
+                val json = JSONArray(settingsDataString)
+                val settingsList = mutableListOf<AgentSetting>()
+                for (i in 0 until json.length()) {
+                    settingsList.add(AgentSetting.fromString(json.getJSONObject(i).toString()))
+                }
+                AgentSettingsView(settings = settingsList)
+            }
+        }
 //    }
 }
