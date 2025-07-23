@@ -1,9 +1,11 @@
 package dev.deliteai.assistant.domain.models
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import dev.deliteai.assistant.R
@@ -33,6 +35,8 @@ data class AgentSetting(
     val description: String,
     val inputType: InputType,
     val defaultValue: Any? = null,
+    val icon: ImageVector,
+    val iconTint: Color
 )
 
 data class PermissionItem(
@@ -62,12 +66,18 @@ val agents = listOf(
             AgentSetting(
                 name = "Wake‑up time",
                 description = "We’ll keep the summary ready before this time.",
-                inputType = InputType.TIME
+                inputType = InputType.TIME,
+                defaultValue = "5:00",
+                icon = Icons.Default.Alarm,
+                iconTint = Color(0xffC6790D)
             ),
             AgentSetting(
                 name = "Autoplay summary",
                 description = "We’ll start playing the summary via on‑device TTS at your scheduled wake‑up time.",
-                inputType = InputType.BOOL
+                inputType = InputType.BOOL,
+                defaultValue = true,
+                icon = Icons.Default.Speaker,
+                iconTint = Color.Magenta
             ),
         ),
         image = R.drawable.ag_notification_summarizer,
@@ -88,7 +98,10 @@ val agents = listOf(
             AgentSetting(
                 name = "Wake‑up time",
                 description = "We’ll keep the summary ready before this time.",
-                inputType = InputType.TIME
+                inputType = InputType.TIME,
+                defaultValue = "5:00",
+                icon = Icons.Default.Alarm,
+                iconTint = Color.Magenta
             ),
         ),
         image = R.drawable.ag_gmail_agent,

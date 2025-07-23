@@ -21,6 +21,7 @@ import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
 import dev.deliteai.assistant.presentation.views.about.AboutView
 import dev.deliteai.assistant.presentation.views.agent.AgentInfoView
+import dev.deliteai.assistant.presentation.views.agent.AgentSettingsView
 import dev.deliteai.assistant.presentation.views.agent.AgentsView
 import dev.deliteai.assistant.presentation.views.chat.ChatView
 import dev.deliteai.assistant.presentation.views.history.HistoryView
@@ -52,7 +53,7 @@ fun Root(
                     chatViewModel,
                     isNavBarVisible = mainViewModel.isNavBarVisible.value
                 )
-                3 -> AgentInfoView(agents[0])
+                3 -> AgentSettingsView(agents[0].settings)
                 4 -> AboutView()
             }
 
