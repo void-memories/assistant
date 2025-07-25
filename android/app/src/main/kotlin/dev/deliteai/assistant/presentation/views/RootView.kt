@@ -13,9 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.deliteai.assistant.domain.models.agents
 import dev.deliteai.assistant.presentation.components.NavBar
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
+import dev.deliteai.assistant.presentation.viewmodels.AgentViewModel
 import dev.deliteai.assistant.presentation.viewmodels.ChatViewModel
 import dev.deliteai.assistant.presentation.viewmodels.HistoryViewModel
 import dev.deliteai.assistant.presentation.viewmodels.MainViewModel
@@ -30,7 +30,8 @@ import dev.deliteai.assistant.presentation.views.home.HomeTab
 fun RootView(
     mainViewModel: MainViewModel,
     historyViewModel: HistoryViewModel,
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel,
+    agentViewModel: AgentViewModel
 ) {
     Box(
         modifier = Modifier
@@ -51,7 +52,7 @@ fun RootView(
                     chatViewModel,
                     isNavBarVisible = mainViewModel.isNavBarVisible.value
                 )
-                3 -> AgentsTab()
+                3 -> AgentsTab(agentViewModel)
                 4 -> AboutTab()
             }
 

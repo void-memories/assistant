@@ -1,21 +1,29 @@
 package dev.deliteai.assistant.domain.models
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RemoveRedEye
-import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import dev.deliteai.assistant.R
 import dev.deliteai.assistant.presentation.ui.theme.accentLow1
-import org.json.JSONObject
+import dev.deliteai.assistant.utils.formatColor
+import dev.deliteai.assistant.utils.getSettingIcon
+import dev.deliteai.assistant.utils.parseColor
+import dev.deliteai.assistant.utils.resolveDrawableResource
+import dev.deliteai.assistant.utils.resolveResourceName
 import org.json.JSONArray
+import org.json.JSONObject
+
 
 enum class AppPermission(val androidPermission: String) {
     POST_NOTIFICATION("android.permission.POST_NOTIFICATIONS"),
-    READ_NOTIFICATION("android.permission.READ_NOTIFICATION")
+    READ_NOTIFICATION("android.permission.READ_NOTIFICATION");
+
+    val displayIcon: ImageVector
+        get() = when (this) {
+            POST_NOTIFICATION -> Icons.Filled.Notifications
+            READ_NOTIFICATION -> Icons.Filled.RemoveRedEye
+        }
 }
 
 enum class InputType {
@@ -32,34 +40,37 @@ data class Agent(
     val highlight: Color = accentLow1
 ) {
     override fun toString(): String {
-        val json = JSONObject()
-        json.put("id", id)
-        json.put("name", name)
-        json.put("description", description)
-        
-        val permissionsArray = JSONArray()
-        requiredPermissions.forEach { permission ->
-            permissionsArray.put(JSONObject().apply {
-                put("name", permission.name)
-                put("runtimePermission", permission.runtimePermission.androidPermission)
+        val json = JSONObject().apply {
+            put("id", id)
+            put("name", name)
+            put("description", description)
+
+            // Permissions
+            put("requiredPermissions", JSONArray().apply {
+                requiredPermissions.forEach { permission ->
+                    put(JSONObject().apply {
+                        put("name", permission.name)
+                        put("runtimePermission", permission.runtimePermission.androidPermission)
+                    })
+                }
             })
-        }
-        json.put("requiredPermissions", permissionsArray)
-        
-        val settingsArray = JSONArray()
-        settings.forEach { setting ->
-            settingsArray.put(JSONObject().apply {
-                put("name", setting.name)
-                put("description", setting.description)
-                put("inputType", setting.inputType.name)
-                put("defaultValue", setting.defaultValue)
-                put("iconTint", setting.iconTint.value.toString())
+
+            // Settings
+            put("settings", JSONArray().apply {
+                settings.forEach { setting ->
+                    put(JSONObject().apply {
+                        put("name", setting.name)
+                        put("description", setting.description)
+                        put("inputType", setting.inputType.name)
+                        put("defaultValue", setting.defaultValue)
+                        put("iconTint", formatColor(setting.iconTint))
+                    })
+                }
             })
+
+            put("image", resolveResourceName(image))
+            put("highlight", formatColor(highlight))
         }
-        json.put("settings", settingsArray)
-        json.put("image", image)
-        json.put("highlight", highlight.value.toString())
-        
         return json.toString()
     }
 
@@ -69,49 +80,66 @@ data class Agent(
             val id = json.getString("id")
             val name = json.getString("name")
             val description = json.getString("description")
-            
-            val permissionsArray = json.getJSONArray("requiredPermissions")
-            val requiredPermissions = mutableSetOf<PermissionItem>()
-            for (i in 0 until permissionsArray.length()) {
-                val permissionJson = permissionsArray.getJSONObject(i)
-                val permissionName = permissionJson.getString("name")
-                val runtimePermission = AppPermission.values().find { 
-                    it.androidPermission == permissionJson.getString("runtimePermission") 
-                } ?: AppPermission.POST_NOTIFICATION
-                
-                // Find appropriate icon based on permission type
-                val icon = when(runtimePermission) {
-                    AppPermission.POST_NOTIFICATION -> Icons.Filled.Notifications
-                    AppPermission.READ_NOTIFICATION -> Icons.Filled.RemoveRedEye
+
+            val requiredPermissions = json.getJSONArray("requiredPermissions")
+                .let { array ->
+                    (0 until array.length()).map { i ->
+                        val permissionJson = array.getJSONObject(i)
+                        val permissionName = permissionJson.getString("name")
+                        val runtimePermissionString = permissionJson.getString("runtimePermission")
+
+                        val runtimePermission = AppPermission.values()
+                            .find { it.androidPermission == runtimePermissionString }
+                            ?: throw IllegalArgumentException("Unknown permission: $runtimePermissionString")
+
+                        PermissionItem(
+                            name = permissionName,
+                            icon = runtimePermission.displayIcon,
+                            runtimePermission = runtimePermission
+                        )
+                    }.toSet()
                 }
-                
-                requiredPermissions.add(PermissionItem(permissionName, icon, runtimePermission))
-            }
-            
-            val settingsArray = json.getJSONArray("settings")
-            val settings = mutableListOf<AgentSetting>()
-            for (i in 0 until settingsArray.length()) {
-                val settingJson = settingsArray.getJSONObject(i)
-                val settingName = settingJson.getString("name")
-                val settingDescription = settingJson.getString("description")
-                val inputType = InputType.valueOf(settingJson.getString("inputType"))
-                val defaultValue = if (settingJson.isNull("defaultValue")) null else settingJson.get("defaultValue")
-                val iconTint = Color(settingJson.getString("iconTint").toULong())
-                
-                // Find appropriate icon based on setting name
-                val icon = when {
-                    settingName.contains("time", ignoreCase = true) -> Icons.Default.Alarm
-                    settingName.contains("play", ignoreCase = true) -> Icons.Default.Speaker
-                    else -> Icons.Default.Alarm
+
+            val settings = json.getJSONArray("settings")
+                .let { array ->
+                    (0 until array.length()).map { i ->
+                        val settingJson = array.getJSONObject(i)
+                        val settingName = settingJson.getString("name")
+                        val settingDescription = settingJson.getString("description")
+                        val inputType = InputType.valueOf(settingJson.getString("inputType"))
+                        val defaultValue = if (settingJson.isNull("defaultValue")) {
+                            null
+                        } else {
+                            settingJson.get("defaultValue")
+                        }
+                        val iconTint = parseColor(settingJson.getString("iconTint"))
+                        val icon = getSettingIcon(settingName, inputType)
+
+                        AgentSetting(
+                            name = settingName,
+                            description = settingDescription,
+                            inputType = inputType,
+                            defaultValue = defaultValue,
+                            icon = icon,
+                            iconTint = iconTint
+                        )
+                    }
                 }
-                
-                settings.add(AgentSetting(settingName, settingDescription, inputType, defaultValue, icon, iconTint))
-            }
-            
-            val image = json.getInt("image")
-            val highlight = Color(json.getString("highlight").toULong())
-            
-            return Agent(id, name, description, requiredPermissions, settings, image, highlight)
+
+            val imageName = json.getString("image")
+            val imageRes = resolveDrawableResource(imageName)
+
+            val highlightColor = parseColor(json.getString("highlight"))
+
+            return Agent(
+                id = id,
+                name = name,
+                description = description,
+                requiredPermissions = requiredPermissions,
+                settings = settings,
+                image = imageRes,
+                highlight = highlightColor
+            )
         }
     }
 }
@@ -125,13 +153,13 @@ data class AgentSetting(
     val iconTint: Color
 ) {
     override fun toString(): String {
-        val json = JSONObject()
-        json.put("name", name)
-        json.put("description", description)
-        json.put("inputType", inputType.name)
-        json.put("defaultValue", defaultValue)
-        json.put("iconTint", iconTint.value.toString())
-        return json.toString()
+        return JSONObject().apply {
+            put("name", name)
+            put("description", description)
+            put("inputType", inputType.name)
+            put("defaultValue", defaultValue)
+            put("iconTint", formatColor(iconTint))
+        }.toString()
     }
 
     companion object {
@@ -141,16 +169,17 @@ data class AgentSetting(
             val description = json.getString("description")
             val inputType = InputType.valueOf(json.getString("inputType"))
             val defaultValue = if (json.isNull("defaultValue")) null else json.get("defaultValue")
-            val iconTint = Color(json.getString("iconTint").toULong())
-            
-            // Find appropriate icon based on setting name
-            val icon = when {
-                name.contains("time", ignoreCase = true) -> Icons.Default.Alarm
-                name.contains("play", ignoreCase = true) -> Icons.Default.Speaker
-                else -> Icons.Default.Alarm
-            }
-            
-            return AgentSetting(name, description, inputType, defaultValue, icon, iconTint)
+            val iconTint = parseColor(json.getString("iconTint"))
+            val icon = getSettingIcon(name, inputType)
+
+            return AgentSetting(
+                name = name,
+                description = description,
+                inputType = inputType,
+                defaultValue = defaultValue,
+                icon = icon,
+                iconTint = iconTint
+            )
         }
     }
 }
@@ -161,91 +190,27 @@ data class PermissionItem(
     val runtimePermission: AppPermission
 ) {
     override fun toString(): String {
-        val json = JSONObject()
-        json.put("name", name)
-        json.put("runtimePermission", runtimePermission.androidPermission)
-        return json.toString()
+        return JSONObject().apply {
+            put("name", name)
+            put("runtimePermission", runtimePermission.androidPermission)
+        }.toString()
     }
 
     companion object {
         fun fromString(str: String): PermissionItem {
             val json = JSONObject(str)
             val name = json.getString("name")
-            val runtimePermission = AppPermission.values().find { 
-                it.androidPermission == json.getString("runtimePermission") 
-            } ?: AppPermission.POST_NOTIFICATION
-            
-            // Find appropriate icon based on permission type
-            val icon = when(runtimePermission) {
-                AppPermission.POST_NOTIFICATION -> Icons.Filled.Notifications
-                AppPermission.READ_NOTIFICATION -> Icons.Filled.RemoveRedEye
-            }
-            
-            return PermissionItem(name, icon, runtimePermission)
+            val runtimePermissionString = json.getString("runtimePermission")
+
+            val runtimePermission = AppPermission.values()
+                .find { it.androidPermission == runtimePermissionString }
+                ?: throw IllegalArgumentException("Unknown permission: $runtimePermissionString")
+
+            return PermissionItem(
+                name = name,
+                icon = runtimePermission.displayIcon,
+                runtimePermission = runtimePermission
+            )
         }
     }
 }
-
-val agents = listOf(
-    Agent(
-        id = "id",
-        name = "Notification Summarizer",
-        description = "Get summary of your notifications every time you wake up",
-        requiredPermissions = setOf(
-            PermissionItem(
-                name = "Post Notifications",
-                icon = Icons.Filled.Notifications,
-                runtimePermission = AppPermission.POST_NOTIFICATION
-            ),
-            PermissionItem(
-                name = "Read Notifications",
-                icon = Icons.Filled.RemoveRedEye,
-                runtimePermission = AppPermission.READ_NOTIFICATION
-            )
-        ),
-        settings = listOf(
-            AgentSetting(
-                name = "Wake‑up time",
-                description = "We’ll keep the summary ready before this time.",
-                inputType = InputType.TIME,
-                defaultValue = "5:00",
-                icon = Icons.Default.Alarm,
-                iconTint = Color(0xffC6790D)
-            ),
-            AgentSetting(
-                name = "Autoplay summary",
-                description = "We’ll start playing the summary via on‑device TTS at your scheduled wake‑up time.",
-                inputType = InputType.BOOL,
-                defaultValue = true,
-                icon = Icons.Default.Speaker,
-                iconTint = Color.Magenta
-            ),
-        ),
-        image = R.drawable.ag_notification_summarizer,
-        highlight = Color(0xff5A4900)
-    ),
-    Agent(
-        id = "id2",
-        name = "Gmail Agent",
-        description = "Get summary of your unread emails",
-        requiredPermissions = setOf(
-            PermissionItem(
-                name = "Read Notifications",
-                icon = Icons.Filled.MailOutline,
-                runtimePermission = AppPermission.READ_NOTIFICATION
-            )
-        ),
-        settings = listOf(
-            AgentSetting(
-                name = "Wake‑up time",
-                description = "We’ll keep the summary ready before this time.",
-                inputType = InputType.TIME,
-                defaultValue = "5:00",
-                icon = Icons.Default.Alarm,
-                iconTint = Color.Magenta
-            ),
-        ),
-        image = R.drawable.ag_gmail_agent,
-        highlight = Color(0xff471B1B)
-    )
-)

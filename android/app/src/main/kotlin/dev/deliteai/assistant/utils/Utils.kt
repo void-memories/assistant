@@ -11,7 +11,16 @@ import dev.deliteai.datamodels.NimbleNetConfig
 import dev.deliteai.datamodels.NimbleNetTensor
 import dev.deliteai.assistant.BuildConfig
 import dev.deliteai.assistant.domain.models.AssetDownloadProgress
+import dev.deliteai.assistant.domain.models.InputType
+import dev.deliteai.assistant.R
 import android.annotation.SuppressLint
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Speaker
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import android.app.ActivityManager
 import android.app.Application
 import android.app.DownloadManager
@@ -357,3 +366,84 @@ fun Context.isPermissionGranted(permission: AppPermission): Boolean =
                 .getEnabledListenerPackages(this)
                 .contains(packageName)
     }
+
+/**
+ * Parses a color string that can be in hex format (0xFFFFFFFF) or decimal format.
+ * Ensures the color is valid for Compose by using proper ARGB parsing.
+ */
+fun parseColor(colorString: String): Color {
+    return try {
+        val hexString = when {
+            colorString.startsWith("0x", ignoreCase = true) -> 
+                colorString.removePrefix("0x")
+            colorString.startsWith("#") -> 
+                colorString.removePrefix("#")
+            else -> 
+                colorString.toULong().toString(16).padStart(8, '0')
+        }
+        
+        // Ensure we have exactly 8 hex characters (ARGB)
+        val normalizedHex = hexString.padStart(8, 'f').take(8)
+        
+        // Parse ARGB components
+        val alpha = normalizedHex.substring(0, 2).toInt(16) / 255f
+        val red = normalizedHex.substring(2, 4).toInt(16) / 255f
+        val green = normalizedHex.substring(4, 6).toInt(16) / 255f
+        val blue = normalizedHex.substring(6, 8).toInt(16) / 255f
+        
+        Color(red, green, blue, alpha)
+    } catch (e: Exception) {
+        // Fallback to a default color if parsing fails
+        Color(0.5f, 0.5f, 0.5f, 1.0f) // Gray
+    }
+}
+
+/**
+ * Formats a color to a consistent hex string format.
+ */
+fun formatColor(color: Color): String {
+    val alpha = (color.alpha * 255).toInt().toString(16).padStart(2, '0')
+    val red = (color.red * 255).toInt().toString(16).padStart(2, '0')
+    val green = (color.green * 255).toInt().toString(16).padStart(2, '0')
+    val blue = (color.blue * 255).toInt().toString(16).padStart(2, '0')
+    return "0x$alpha$red$green$blue"
+}
+
+/**
+ * Resolves drawable resource name to resource ID safely.
+ */
+fun resolveDrawableResource(imageName: String): Int {
+    return try {
+        val imageField = R.drawable::class.java.getField(imageName)
+        imageField.getInt(null)
+    } catch (e: Exception) {
+        // Fallback to a default drawable or throw a more descriptive error
+        throw IllegalArgumentException("Drawable resource '$imageName' not found", e)
+    }
+}
+
+/**
+ * Resolves resource ID back to resource name safely.
+ */
+fun resolveResourceName(resourceId: Int): String {
+    return R.drawable::class.java.fields
+        .firstOrNull { field ->
+            try { field.getInt(null) == resourceId } catch (e: Exception) { false }
+        }?.name ?: "unknown_resource"
+}
+
+/**
+ * Determines appropriate icon for a setting based on its name and type.
+ */
+fun getSettingIcon(settingName: String, inputType: InputType): ImageVector {
+    return when {
+        settingName.contains("time", ignoreCase = true) -> Icons.Default.Alarm
+        settingName.contains("play", ignoreCase = true) ||
+        settingName.contains("audio", ignoreCase = true) ||
+        settingName.contains("sound", ignoreCase = true) -> Icons.Default.Speaker
+        settingName.contains("mail", ignoreCase = true) ||
+        settingName.contains("email", ignoreCase = true) -> Icons.Default.MailOutline
+        inputType == InputType.BOOL -> Icons.Default.Settings
+        else -> Icons.Default.Settings
+    }
+}

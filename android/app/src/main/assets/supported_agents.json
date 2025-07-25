@@ -1,0 +1,57 @@
+[
+  {
+    "id": "notification_summarizer",
+    "name": "Notification Summarizer",
+    "description": "Get summary of your notifications every time you wake up",
+    "image": "ag_notification_summarizer",
+    "highlight": "0xff5A4900",
+    "requiredPermissions": [
+      {
+        "name": "Post Notifications",
+        "runtimePermission": "android.permission.POST_NOTIFICATIONS"
+      },
+      {
+        "name": "Notification Access",
+        "runtimePermission": "android.permission.READ_NOTIFICATION"
+      }
+    ],
+    "settings": [
+      {
+        "name": "Wake-up time",
+        "description": "We'll keep the summary ready before this time.",
+        "inputType": "TIME",
+        "defaultValue": "5:00",
+        "iconTint": "0xffc6790d"
+      },
+      {
+        "name": "Autoplay summary",
+        "description": "We'll start playing the summary via on-device TTS at your scheduled wake-up time.",
+        "inputType": "BOOL",
+        "defaultValue": true,
+        "iconTint": "0xff6366f1"
+      }
+    ]
+  },
+  {
+    "id": "gmail_agent",
+    "name": "Gmail Agent",
+    "description": "Get summary of your unread emails",
+    "image": "ag_gmail_agent",
+    "highlight": "0xff471B1B",
+    "requiredPermissions": [
+      {
+        "name": "Notification Access",
+        "runtimePermission": "android.permission.READ_NOTIFICATION"
+      }
+    ],
+    "settings": [
+      {
+        "name": "Wake-up time",
+        "description": "We'll keep the summary ready before this time.",
+        "inputType": "TIME",
+        "defaultValue": "5:00",
+        "iconTint": "0xffc6790d"
+      }
+    ]
+  }
+]

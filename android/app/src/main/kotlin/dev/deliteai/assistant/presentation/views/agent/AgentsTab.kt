@@ -29,18 +29,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.deliteai.assistant.domain.models.Agent
-import dev.deliteai.assistant.domain.models.agents
 import dev.deliteai.assistant.presentation.components.Header
 import dev.deliteai.assistant.presentation.components.HeroCarousel
 import dev.deliteai.assistant.presentation.components.TwoTabToggle
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
+import dev.deliteai.assistant.presentation.viewmodels.AgentViewModel
 import dev.deliteai.assistant.utils.Constants
 import dev.deliteai.assistant.utils.GlobalState
 
 @Composable
-fun AgentsTab() {
+fun AgentsTab(agentsViewModel: AgentViewModel) {
     val selectedTabIndex = remember { mutableStateOf(0) }
+    val agents = agentsViewModel.getSupportedAgents()
 
     Column(
         Modifier
