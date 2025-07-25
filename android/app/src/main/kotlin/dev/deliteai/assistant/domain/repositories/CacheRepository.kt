@@ -22,6 +22,7 @@ class CacheRepository(application: Application) {
     private val INVITE_REGISTRATION_KEY = "invite_registered"
     private val APP_START_COUNT_KEY = "app_start_count"
     private val AGENT_CONFIG_PREFIX = "agent_config_"
+    private val AGENT_ENABLED_PREFIX = "agent_enabled_"
     private var sharedPreferences: SharedPreferences =
         application.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
@@ -125,5 +126,15 @@ class CacheRepository(application: Application) {
         }
 
         return configMap
+    }
+
+    fun isAgentEnabled(agentId: String): Boolean {
+        return sharedPreferences.getBoolean(AGENT_ENABLED_PREFIX + agentId, false)
+    }
+
+    fun setAgentEnabled(agentId: String, enabled: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(AGENT_ENABLED_PREFIX + agentId, enabled)
+            .apply()
     }
 }

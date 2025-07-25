@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,11 +50,16 @@ import dev.deliteai.assistant.utils.GlobalState
 import dev.deliteai.assistant.utils.GlobalState.perms
 import dev.deliteai.assistant.utils.isPermissionGranted
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
 
 @Composable
 fun AgentInfoView(agent: Agent, agentViewModel: AgentViewModel) {
+    val isAgentEnabled = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        //TODO: implement a loader
+        isAgentEnabled.value = agentViewModel.isAgentEnabled(agent.id)
+    }
+
     Column(
         Modifier
             .fillMaxSize()
@@ -105,8 +111,8 @@ fun AgentInfoView(agent: Agent, agentViewModel: AgentViewModel) {
         ScrollablePermissionRow(agent.requiredPermissions, agent.highlight)
 
         Spacer(Modifier.weight(1f))
-        FullButton(agentViewModel.isAgentEnabled(agent.id)) {
-            agentViewModel.toggleAgent(agent.id)
+        FullButton(isEnabled = isAgentEnabled.value) {
+            isAgentEnabled.value = agentViewModel.toggleAgent(agent.id)
         }
     }
 }

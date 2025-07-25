@@ -1,6 +1,7 @@
 package dev.deliteai.assistant.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,7 @@ import dev.deliteai.assistant.presentation.ui.theme.accent
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
 
 @Composable
-fun FullButton(isEnabled: Boolean, onClick: (isEnabled: Boolean) -> Unit) {
+fun FullButton(isEnabled: Boolean, onClick: () -> Unit) {
     val bg = if (isEnabled) Color.Red.copy(alpha = 0.3f) else backgroundSecondary
     val icon = if (!isEnabled) Icons.AutoMirrored.Filled.ArrowForwardIos else Icons.Default.Close
     val iconTine = if (!isEnabled) accent else Color.White
@@ -35,6 +36,7 @@ fun FullButton(isEnabled: Boolean, onClick: (isEnabled: Boolean) -> Unit) {
     Box(
         Modifier
             .height(52.dp)
+            .clickable { onClick() }
             .fillMaxWidth()
             .background(bg, shape = RoundedCornerShape(12.dp))
     ) {

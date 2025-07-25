@@ -23,16 +23,15 @@ class AgentViewModel(
 
     fun getSupportedAgents() = supportedAgents.value
 
-    fun loadAgent() {
-
-    }
-
     fun isAgentEnabled(id: String): Boolean {
-        return true
+        return cacheRepository.isAgentEnabled(id)
     }
 
     fun toggleAgent(id: String): Boolean {
-        return true
+        val currentState = isAgentEnabled(id)
+        val newState = !currentState
+        cacheRepository.setAgentEnabled(id, newState)
+        return newState
     }
 
     private fun loadSupportedAgents() {
