@@ -1,6 +1,7 @@
 package dev.deliteai.assistant.presentation.views.agent
 
 import android.app.Application
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -124,8 +126,10 @@ fun ScrollablePermissionRow(permissions: Set<PermissionItem>, highlight: Color) 
 @Composable
 fun PermissionTile(permission: PermissionItem, highlight: Color) {
     val application = LocalContext.current.applicationContext as Application
-    var isGranted = mutableStateOf(application.isPermissionGranted(permission.runtimePermission))
     val cs = rememberCoroutineScope()
+    val isGranted = remember {
+        mutableStateOf(application.isPermissionGranted(permission.runtimePermission))
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
@@ -137,16 +141,24 @@ fun PermissionTile(permission: PermissionItem, highlight: Color) {
             Modifier
                 .size(64.dp)
                 .clickable {
-                    if (!isGranted) {
+                    if (!isGranted.value) {
                         cs.launch {
                             perms?.grant(permission.runtimePermission)
-                            isGranted =
+                            isGranted.value =
                                 application.isPermissionGranted(permission.runtimePermission)
                         }
+                    } else {
+                        Toast
+                            .makeText(
+                                application,
+                                "Permission already granted.",
+                                Toast.LENGTH_SHORT
+                            )
+                            .show()
                     }
                 }
                 .background(
-                    if (!isGranted) backgroundSecondary else highlight, shape =
+                    if (!isGranted.value) backgroundSecondary else highlight, shape =
                     RoundedCornerShape(8.dp)
                 )
         ) {
