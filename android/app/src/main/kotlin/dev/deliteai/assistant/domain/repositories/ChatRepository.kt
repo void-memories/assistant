@@ -125,6 +125,7 @@ class ChatRepository {
                     isFirstJobDone.value = true
                 }
             }
+            delay(50)
         } while (!outputMap.containsKey("finished"))
         ttsJobs.forEach {
             if (it.isActive)

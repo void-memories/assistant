@@ -12,5 +12,6 @@ import androidx.navigation.NavController
 object GlobalState {
     @SuppressLint("StaticFieldLeak")
     var navController: NavController? = null
-    var clientId: String? = null
+    @SuppressLint("StaticFieldLeak")
+    var perms: PermissionManager? = null
 }

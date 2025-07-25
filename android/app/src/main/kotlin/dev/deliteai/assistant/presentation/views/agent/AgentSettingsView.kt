@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.deliteai.assistant.domain.models.AgentSetting
 import dev.deliteai.assistant.domain.models.InputType
 import dev.deliteai.assistant.presentation.components.Header
@@ -54,6 +56,7 @@ fun AgentSettingsView(settings: List<AgentSetting>) {
             .fillMaxSize()
             .padding(horizontal = 24.dp)
     ) {
+        Spacer(Modifier.height(24.dp))
         Header("Settings", "Tweak the settings to suit your needs")
         LazyColumn {
             items(settings) { setting ->
@@ -72,7 +75,7 @@ private fun SettingRow(setting: AgentSetting) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(bottom = 20.dp)
+            .padding(bottom = 24.dp)
             .clickable { showDialog = true },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -146,7 +149,7 @@ private fun RowScope.SettingIcon(setting: AgentSetting) {
         imageVector = setting.icon,
         contentDescription = null,
         tint = setting.iconTint,
-        modifier = Modifier.align(Alignment.Top)
+        modifier = Modifier.align(Alignment.Top).size(24.dp)
     )
 }
 
@@ -158,13 +161,16 @@ private fun RowScope.SettingTexts(setting: AgentSetting) {
     ) {
         Text(
             setting.name,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = androidx.compose.ui
+                    .text.font.FontWeight.Medium
+            )
         )
         Spacer(Modifier.height(4.dp))
         Text(
             setting.description,
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
             )
         )

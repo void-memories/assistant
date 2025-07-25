@@ -108,7 +108,7 @@ fun AgentCard(agent: Agent) {
             agent.name,
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             agent.description, style = MaterialTheme.typography.bodySmall.copy(
                 color = Color

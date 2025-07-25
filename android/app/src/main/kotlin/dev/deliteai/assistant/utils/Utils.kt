@@ -25,7 +25,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import dev.deliteai.assistant.domain.models.AppPermission
 import dev.deliteai.impl.common.DATATYPE
 import dev.deliteai.impl.common.NIMBLENET_VARIANTS
 import kotlinx.coroutines.delay
@@ -343,7 +345,15 @@ internal fun getInternalDeviceId(application: Application): String {
     }
 }
 
-fun Application.isPermissionGranted(permission: String): Boolean {
-    return ContextCompat.checkSelfPermission(this, permission) ==
-            PackageManager.PERMISSION_GRANTED
-}
+fun Context.isPermissionGranted(permission: AppPermission): Boolean =
+    when (permission) {
+        AppPermission.POST_NOTIFICATION ->
+            ContextCompat.checkSelfPermission(
+                this, permission.androidPermission
+            ) == PackageManager.PERMISSION_GRANTED
+
+        AppPermission.READ_NOTIFICATION ->
+            NotificationManagerCompat
+                .getEnabledListenerPackages(this)
+                .contains(packageName)
+    }

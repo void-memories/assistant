@@ -100,7 +100,6 @@ fun HistoryTab(
 
         if (isSelectionMode) {
             CenterAlignedTopAppBar(
-                windowInsets = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(65.dp),
@@ -142,7 +141,7 @@ fun HistoryTab(
             Box {}
         }
 
-        Spacer(Modifier.height(20.dp))
+//        Spacer(Modifier.height(20.dp))
 
         if (historyViewModel.chatHistory.value?.isNotEmpty() == true) {
             BasicTextField(

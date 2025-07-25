@@ -24,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,12 +37,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.deliteai.assistant.domain.models.Agent
 import dev.deliteai.assistant.domain.models.PermissionItem
+import dev.deliteai.assistant.presentation.components.FullButton
 import dev.deliteai.assistant.presentation.ui.theme.accent
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
-import dev.deliteai.assistant.utils.isPermissionGranted
 import dev.deliteai.assistant.utils.Constants
 import dev.deliteai.assistant.utils.GlobalState
+import dev.deliteai.assistant.utils.GlobalState.perms
+import dev.deliteai.assistant.utils.isPermissionGranted
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -69,8 +74,8 @@ fun AgentInfoView(agent: Agent) {
         ) {
             Text(agent.name, style = MaterialTheme.typography.titleMedium)
             Icon(
-                Icons.Default.Settings, 
-                null, 
+                Icons.Default.Settings,
+                null,
                 tint = accent,
                 modifier = Modifier.clickable {
                     val settingsJson = JSONArray()
@@ -100,6 +105,10 @@ fun AgentInfoView(agent: Agent) {
         Spacer(Modifier.height(16.dp))
         ScrollablePermissionRow(agent.requiredPermissions, agent.highlight)
 
+        Spacer(Modifier.weight(1f))
+        FullButton(false) {
+
+        }
     }
 }
 
@@ -115,18 +124,29 @@ fun ScrollablePermissionRow(permissions: Set<PermissionItem>, highlight: Color) 
 @Composable
 fun PermissionTile(permission: PermissionItem, highlight: Color) {
     val application = LocalContext.current.applicationContext as Application
-    val isGranted = application.isPermissionGranted(permission.runtimePermission.androidPermission)
+    var isGranted = mutableStateOf(application.isPermissionGranted(permission.runtimePermission))
+    val cs = rememberCoroutineScope()
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(
-            end = 16.dp
-        )
+        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+            .padding(
+                end = 16.dp
+            )
     ) {
         Box(
             Modifier
                 .size(64.dp)
+                .clickable {
+                    if (!isGranted) {
+                        cs.launch {
+                            perms?.grant(permission.runtimePermission)
+                            isGranted =
+                                application.isPermissionGranted(permission.runtimePermission)
+                        }
+                    }
+                }
                 .background(
-                    if (isGranted) backgroundSecondary else highlight, shape =
+                    if (!isGranted) backgroundSecondary else highlight, shape =
                     RoundedCornerShape(8.dp)
                 )
         ) {

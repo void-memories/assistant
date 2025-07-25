@@ -82,7 +82,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             val isFirstBoot = cacheRepository.isFirstBoot()
 
             //device compatibility check
-            GlobalState.clientId = getCT() ?: return@launch
+            val ct = getCT() ?: return@launch
 
             withContext(Dispatchers.Main) {
                 isFirstBootVS.value = isFirstBoot
@@ -99,7 +99,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                 AssetDataCopier.copyEspeakDataIfNeeded(application, it)
             }
 
-            onSuccessfulCopy(GlobalState.clientId!!)
+            onSuccessfulCopy(ct)
         }
     }
 

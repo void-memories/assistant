@@ -48,6 +48,7 @@ import org.json.JSONArray
 import dev.deliteai.assistant.domain.models.Agent
 import dev.deliteai.assistant.domain.models.AgentSetting
 import dev.deliteai.assistant.domain.models.agents
+import dev.deliteai.assistant.utils.PermissionManager
 
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels {
@@ -58,6 +59,12 @@ class MainActivity : ComponentActivity() {
     }
     private val historyViewModel: HistoryViewModel by viewModels {
         ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+    }
+    private val perms by lazy {
+        PermissionManager(
+            context = this,
+            caller  = this,
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +79,7 @@ class MainActivity : ComponentActivity() {
         }
 
         mainViewModel.triggerInAppReview(this)
+        GlobalState.perms = perms
 
         setContent {
             NimbleEdgeChatBotTheme {
