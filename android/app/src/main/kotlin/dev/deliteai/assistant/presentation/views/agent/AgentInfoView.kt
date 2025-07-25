@@ -43,6 +43,7 @@ import dev.deliteai.assistant.presentation.components.FullButton
 import dev.deliteai.assistant.presentation.ui.theme.accent
 import dev.deliteai.assistant.presentation.ui.theme.backgroundPrimary
 import dev.deliteai.assistant.presentation.ui.theme.backgroundSecondary
+import dev.deliteai.assistant.presentation.viewmodels.AgentViewModel
 import dev.deliteai.assistant.utils.Constants
 import dev.deliteai.assistant.utils.GlobalState
 import dev.deliteai.assistant.utils.GlobalState.perms
@@ -52,7 +53,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
-fun AgentInfoView(agent: Agent) {
+fun AgentInfoView(agent: Agent, agentViewModel: AgentViewModel) {
     Column(
         Modifier
             .fillMaxSize()
@@ -80,11 +81,7 @@ fun AgentInfoView(agent: Agent) {
                 null,
                 tint = accent,
                 modifier = Modifier.clickable {
-                    val settingsJson = JSONArray()
-                    agent.settings.forEach { setting ->
-                        settingsJson.put(JSONObject(setting.toString()))
-                    }
-                    GlobalState.navController?.navigate("${Constants.VIEW.AGENT_SETTINGS_VIEW}/${settingsJson}")
+                    GlobalState.navController?.navigate("${Constants.VIEW.AGENT_SETTINGS_VIEW}/${agent}")
                 }
             )
         }
@@ -108,8 +105,8 @@ fun AgentInfoView(agent: Agent) {
         ScrollablePermissionRow(agent.requiredPermissions, agent.highlight)
 
         Spacer(Modifier.weight(1f))
-        FullButton(false) {
-
+        FullButton(agentViewModel.isAgentEnabled(agent.id)) {
+            agentViewModel.toggleAgent(agent.id)
         }
     }
 }

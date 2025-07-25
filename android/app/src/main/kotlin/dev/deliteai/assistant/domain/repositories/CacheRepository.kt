@@ -6,11 +6,13 @@
 
 package dev.deliteai.assistant.domain.repositories
 
-import dev.deliteai.assistant.domain.models.Chat
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import dev.deliteai.assistant.domain.models.Chat
+import org.json.JSONObject
 
+//TODO:(naman) break this in smaller chunks
 class CacheRepository(application: Application) {
     private val MAX_HISTORY_SIZE = 25
     private val PREF_NAME = "chat_prefs"
@@ -19,6 +21,7 @@ class CacheRepository(application: Application) {
     private val FIRST_CHAT_KEY = "first_chat"
     private val INVITE_REGISTRATION_KEY = "invite_registered"
     private val APP_START_COUNT_KEY = "app_start_count"
+    private val AGENT_CONFIG_PREFIX = "agent_config_"
     private var sharedPreferences: SharedPreferences =
         application.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
@@ -96,5 +99,31 @@ class CacheRepository(application: Application) {
 
     private fun saveChatIds(chatIds: List<String>) {
         sharedPreferences.edit().putString(CHAT_IDS_KEY, chatIds.joinToString(",")).apply()
+    }
+
+    //agent persistance
+    fun saveAgentConfigs(agentId: String, settingId: String, value: Any) {
+        val existingConfigString =
+            sharedPreferences.getString(AGENT_CONFIG_PREFIX + agentId, "{}") ?: "{}"
+        val settingsJson = JSONObject(existingConfigString)
+        settingsJson.put(settingId, value)
+        sharedPreferences.edit()
+            .putString(AGENT_CONFIG_PREFIX + agentId, settingsJson.toString())
+            .apply()
+    }
+
+    fun getAgentConfigs(id: String): Map<String, Any?> {
+        val configString = sharedPreferences.getString(AGENT_CONFIG_PREFIX + id, "{}") ?: "{}"
+        val configJson = JSONObject(configString)
+        val configMap = mutableMapOf<String, Any>()
+
+        configJson.keys().forEach { key ->
+            val value = configJson.get(key)
+            if (value != JSONObject.NULL) {
+                configMap[key] = value
+            }
+        }
+
+        return configMap
     }
 }

@@ -45,25 +45,24 @@ data class Agent(
             put("name", name)
             put("description", description)
 
-            // Permissions
-            put("requiredPermissions", JSONArray().apply {
+            put("required_permissions", JSONArray().apply {
                 requiredPermissions.forEach { permission ->
                     put(JSONObject().apply {
                         put("name", permission.name)
-                        put("runtimePermission", permission.runtimePermission.androidPermission)
+                        put("runtime_permission", permission.runtimePermission.androidPermission)
                     })
                 }
             })
 
-            // Settings
             put("settings", JSONArray().apply {
                 settings.forEach { setting ->
                     put(JSONObject().apply {
+                        put("id", setting.id)
                         put("name", setting.name)
                         put("description", setting.description)
-                        put("inputType", setting.inputType.name)
-                        put("defaultValue", setting.defaultValue)
-                        put("iconTint", formatColor(setting.iconTint))
+                        put("input_type", setting.inputType.name)
+                        put("default_value", setting.defaultValue)
+                        put("icon_tint", formatColor(setting.iconTint))
                     })
                 }
             })
@@ -81,12 +80,12 @@ data class Agent(
             val name = json.getString("name")
             val description = json.getString("description")
 
-            val requiredPermissions = json.getJSONArray("requiredPermissions")
+            val requiredPermissions = json.getJSONArray("required_permissions")
                 .let { array ->
                     (0 until array.length()).map { i ->
                         val permissionJson = array.getJSONObject(i)
                         val permissionName = permissionJson.getString("name")
-                        val runtimePermissionString = permissionJson.getString("runtimePermission")
+                        val runtimePermissionString = permissionJson.getString("runtime_permission")
 
                         val runtimePermission = AppPermission.values()
                             .find { it.androidPermission == runtimePermissionString }
@@ -104,18 +103,20 @@ data class Agent(
                 .let { array ->
                     (0 until array.length()).map { i ->
                         val settingJson = array.getJSONObject(i)
+                        val settingId = settingJson.getString("id")
                         val settingName = settingJson.getString("name")
                         val settingDescription = settingJson.getString("description")
-                        val inputType = InputType.valueOf(settingJson.getString("inputType"))
-                        val defaultValue = if (settingJson.isNull("defaultValue")) {
+                        val inputType = InputType.valueOf(settingJson.getString("input_type"))
+                        val defaultValue = if (settingJson.isNull("default_value")) {
                             null
                         } else {
-                            settingJson.get("defaultValue")
+                            settingJson.get("default_value")
                         }
-                        val iconTint = parseColor(settingJson.getString("iconTint"))
+                        val iconTint = parseColor(settingJson.getString("icon_tint"))
                         val icon = getSettingIcon(settingName, inputType)
 
                         AgentSetting(
+                            id = settingId,
                             name = settingName,
                             description = settingDescription,
                             inputType = inputType,
@@ -145,6 +146,7 @@ data class Agent(
 }
 
 data class AgentSetting(
+    val id: String,
     val name: String,
     val description: String,
     val inputType: InputType,
@@ -154,25 +156,28 @@ data class AgentSetting(
 ) {
     override fun toString(): String {
         return JSONObject().apply {
+            put("id", id)
             put("name", name)
             put("description", description)
-            put("inputType", inputType.name)
-            put("defaultValue", defaultValue)
-            put("iconTint", formatColor(iconTint))
+            put("input_type", inputType.name)
+            put("default_value", defaultValue)
+            put("icon_tint", formatColor(iconTint))
         }.toString()
     }
 
     companion object {
         fun fromString(str: String): AgentSetting {
             val json = JSONObject(str)
+            val id = json.getString("id")
             val name = json.getString("name")
             val description = json.getString("description")
-            val inputType = InputType.valueOf(json.getString("inputType"))
-            val defaultValue = if (json.isNull("defaultValue")) null else json.get("defaultValue")
-            val iconTint = parseColor(json.getString("iconTint"))
+            val inputType = InputType.valueOf(json.getString("input_type"))
+            val defaultValue = if (json.isNull("default_value")) null else json.get("default_value")
+            val iconTint = parseColor(json.getString("icon_tint"))
             val icon = getSettingIcon(name, inputType)
 
             return AgentSetting(
+                id = id,
                 name = name,
                 description = description,
                 inputType = inputType,
@@ -192,7 +197,7 @@ data class PermissionItem(
     override fun toString(): String {
         return JSONObject().apply {
             put("name", name)
-            put("runtimePermission", runtimePermission.androidPermission)
+            put("runtime_permission", runtimePermission.androidPermission)
         }.toString()
     }
 
@@ -200,7 +205,7 @@ data class PermissionItem(
         fun fromString(str: String): PermissionItem {
             val json = JSONObject(str)
             val name = json.getString("name")
-            val runtimePermissionString = json.getString("runtimePermission")
+            val runtimePermissionString = json.getString("runtime_permission")
 
             val runtimePermission = AppPermission.values()
                 .find { it.androidPermission == runtimePermissionString }

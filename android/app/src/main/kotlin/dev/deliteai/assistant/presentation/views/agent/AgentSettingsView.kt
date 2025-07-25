@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,34 +44,54 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.deliteai.assistant.domain.models.Agent
 import dev.deliteai.assistant.domain.models.AgentSetting
 import dev.deliteai.assistant.domain.models.InputType
 import dev.deliteai.assistant.presentation.components.Header
+import dev.deliteai.assistant.presentation.viewmodels.AgentViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun AgentSettingsView(settings: List<AgentSetting>) {
+fun AgentSettingsView(agent: Agent, agentViewModel: AgentViewModel) {
+    val agentSettings = remember { mutableStateOf(mapOf<String, Any>()) }
+    val isLoading = remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        agentSettings.value = agentViewModel.getAgentSettings(agent)
+        isLoading.value = false
+    }
+
     Column(
         Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
     ) {
-        Spacer(Modifier.height(24.dp))
-        Header("Settings", "Tweak the settings to suit your needs")
-        LazyColumn {
-            items(settings) { setting ->
-                SettingRow(setting)
+        if (isLoading.value) {
+            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            Spacer(Modifier.height(24.dp))
+            Header("Settings", "Tweak the settings to suit your needs")
+            LazyColumn {
+                items(agent.settings) { setting ->
+                    SettingRow(
+                        agentViewModel, agent.id, setting, agentSettings.value[setting.id] as
+                                Any
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SettingRow(setting: AgentSetting) {
+private fun SettingRow(
+    agentViewModel: AgentViewModel, agentId: String, setting: AgentSetting, value:
+    Any
+) {
     var showDialog by remember { mutableStateOf(false) }
-    var currentValue by remember { mutableStateOf(setting.defaultValue) }
+    var currentValue by remember { mutableStateOf(value) }
     val ctx = LocalContext.current
 
     Row(
@@ -96,6 +118,10 @@ private fun SettingRow(setting: AgentSetting) {
                     onConfirm = {
                         currentValue = it
                         Log.d("Settings", "${setting.name} = $it")
+                        agentViewModel.setAgentSetting(
+                            agentId = agentId, settingId = setting.id,
+                            value = it
+                        )
                         showDialog = false
                     },
                     onDismiss = { showDialog = false }
@@ -108,6 +134,10 @@ private fun SettingRow(setting: AgentSetting) {
                     onConfirm = {
                         currentValue = it.toString()
                         Log.d("Settings", "${setting.name} = $it")
+                        agentViewModel.setAgentSetting(
+                            agentId = agentId, settingId = setting.id,
+                            value = it
+                        )
                         showDialog = false
                     },
                     onDismiss = { showDialog = false }
@@ -118,6 +148,10 @@ private fun SettingRow(setting: AgentSetting) {
                     onResult = {
                         currentValue = it
                         Log.d("Settings", "${setting.name} = $it")
+                        agentViewModel.setAgentSetting(
+                            agentId = agentId, settingId = setting.id,
+                            value = it
+                        )
                     },
                     onDismiss = { showDialog = false }
                 )
@@ -127,6 +161,10 @@ private fun SettingRow(setting: AgentSetting) {
                     onResult = {
                         currentValue = it
                         Log.d("Settings", "${setting.name} = $it")
+                        agentViewModel.setAgentSetting(
+                            agentId = agentId, settingId = setting.id,
+                            value = it
+                        )
                     },
                     onDismiss = { showDialog = false }
                 )
@@ -136,6 +174,10 @@ private fun SettingRow(setting: AgentSetting) {
                     onResult = {
                         currentValue = it
                         Log.d("Settings", "${setting.name} = $it")
+                        agentViewModel.setAgentSetting(
+                            agentId = agentId, settingId = setting.id,
+                            value = it
+                        )
                     },
                     onDismiss = { showDialog = false }
                 )
@@ -149,7 +191,9 @@ private fun RowScope.SettingIcon(setting: AgentSetting) {
         imageVector = setting.icon,
         contentDescription = null,
         tint = setting.iconTint,
-        modifier = Modifier.align(Alignment.Top).size(24.dp)
+        modifier = Modifier
+            .align(Alignment.Top)
+            .size(24.dp)
     )
 }
 

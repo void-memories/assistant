@@ -5,30 +5,32 @@
     "description": "Get summary of your notifications every time you wake up",
     "image": "ag_notification_summarizer",
     "highlight": "0xff5A4900",
-    "requiredPermissions": [
+    "required_permissions": [
       {
         "name": "Post Notifications",
-        "runtimePermission": "android.permission.POST_NOTIFICATIONS"
+        "runtime_permission": "android.permission.POST_NOTIFICATIONS"
       },
       {
         "name": "Notification Access",
-        "runtimePermission": "android.permission.READ_NOTIFICATION"
+        "runtime_permission": "android.permission.READ_NOTIFICATION"
       }
     ],
     "settings": [
       {
+        "id": "wake_up_time",
         "name": "Wake-up time",
         "description": "We'll keep the summary ready before this time.",
-        "inputType": "TIME",
-        "defaultValue": "5:00",
-        "iconTint": "0xffc6790d"
+        "input_type": "TIME",
+        "default_value": "5:00",
+        "icon_tint": "0xffc6790d"
       },
       {
+        "id": "autoplay_summary",
         "name": "Autoplay summary",
         "description": "We'll start playing the summary via on-device TTS at your scheduled wake-up time.",
-        "inputType": "BOOL",
-        "defaultValue": true,
-        "iconTint": "0xff6366f1"
+        "input_type": "BOOL",
+        "default_value": true,
+        "icon_tint": "0xff6366f1"
       }
     ]
   },
@@ -38,19 +40,20 @@
     "description": "Get summary of your unread emails",
     "image": "ag_gmail_agent",
     "highlight": "0xff471B1B",
-    "requiredPermissions": [
+    "required_permissions": [
       {
         "name": "Notification Access",
-        "runtimePermission": "android.permission.READ_NOTIFICATION"
+        "runtime_permission": "android.permission.READ_NOTIFICATION"
       }
     ],
     "settings": [
       {
+        "id": "wake_up_time",
         "name": "Wake-up time",
         "description": "We'll keep the summary ready before this time.",
-        "inputType": "TIME",
-        "defaultValue": "5:00",
-        "iconTint": "0xffc6790d"
+        "input_type": "TIME",
+        "default_value": "5:00",
+        "icon_tint": "0xffc6790d"
       }
     ]
   }

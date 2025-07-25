@@ -166,17 +166,12 @@ fun Router(
         composable("${Constants.VIEW.AGENT_INFO_VIEW}/{agentData}") { backStackEntry ->
             val agentDataString = backStackEntry.arguments?.getString("agentData")!!
             val agent = Agent.fromString(agentDataString)
-            AgentInfoView(agent = agent)
+            AgentInfoView(agent = agent, agentViewModel = agentViewModel)
         }
-        composable("${Constants.VIEW.AGENT_SETTINGS_VIEW}/{settingsData}") { backStackEntry ->
-            val settingsDataString = backStackEntry.arguments?.getString("settingsData")!!
-            // Parse JSON array of settings
-            val json = JSONArray(settingsDataString)
-            val settingsList = mutableListOf<AgentSetting>()
-            for (i in 0 until json.length()) {
-                settingsList.add(AgentSetting.fromString(json.getJSONObject(i).toString()))
-            }
-            AgentSettingsView(settings = settingsList)
+        composable("${Constants.VIEW.AGENT_SETTINGS_VIEW}/{agentData}") { backStackEntry ->
+            val agentDataString = backStackEntry.arguments?.getString("agentData")!!
+            val agent = Agent.fromString(agentDataString)
+            AgentSettingsView(agent = agent, agentViewModel = agentViewModel)
         }
     }
 //    }
